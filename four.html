@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadra Quest</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+         
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(10, 50px);
+            grid-template-rows: repeat(10, 50px);
+            margin: 20px 0;
+        }
+        .cell {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 1px 1px 10px 1px gray;
+            position: relative;
+            background-color: #fff;
+        }
+        .cell span {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 15px;
+            color: grey;
+            font-weight: bold;
+        }
+        .token {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .players {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .player {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .player input {
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+        }
+        #status {
+            color: blue;
+            font-weight: bold;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .black-hole {
+            background-color: red;
+        }
+        .safe-zone {
+            background-color: green;
+        }
+        .rollButton {
+            background: blueviolet;
+            color: white;
+            margin: 10px;
+            padding: 5px;
+            font-weight: 900;
+            border: none;
+            height: 50px;
+            width: 100px;
+        }
+        .highlight {
+            border: 3px solid black; 
+        }
+        input {
+            border: none;
+            border-bottom: 1px solid grey;
+            outline: none;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <p id="status">Enter player names and roll the dice to start the game.</p>
+    <div class="controls">
+        <div class="players">
+            <div class="player">
+                <input type="text" id="player1" placeholder="Player 1">
+                <button class="rollButton" id="rollPlayer1" style="background: blue;" onclick="rollDice(0)">Roll P1</button>
+            </div>
+            <div class="player">
+                <input type="text" id="player2" placeholder="Player 2">
+                <button class="rollButton" id="rollPlayer2" style="background: yellow;" onclick="rollDice(1)" disabled>Roll P2</button>
+            </div>
+            <div class="player">
+                <input type="text" id="player3" placeholder="Player 3">
+                <button class="rollButton" id="rollPlayer3" style="background: green;" onclick="rollDice(2)" disabled>Roll P3</button>
+            </div>
+            <div class="player">
+                <input type="text" id="player4" placeholder="Player 4">
+                <button class="rollButton" id="rollPlayer4" style="background: red;" onclick="rollDice(3)" disabled>Roll P4</button>
+            </div>
+        </div>
+        <button onclick="initializeGame()">Start Game</button>
+    </div>
+    <div class="board"></div>
+    <script>
+        const players = [
+            { name: '', position: 0, inSafeZone: false, color: 'blue' },
+            { name: '', position: 0, inSafeZone: false, color: 'yellow' },
+            { name: '', position: 0, inSafeZone: false, color: 'green' },
+            { name: '', position: 0, inSafeZone: false, color: 'red' }
+        ];
+        const blackHoles = [7, 12, 25, 40, 50, 60, 94];
+        const safeZones = [2, 38];
+        let currentPlayerIndex = 0;
+        let gameOver = false;
+
+        function createBoard() {
+            const boardElement = document.querySelector('.board');
+            for (let i = 0; i < 100; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.id = `cell-${i}`;
+                if (i === 0) {
+                    cell.innerHTML = '<span>Start</span>';
+                } else if (i === 99) {
+                    cell.innerHTML = '<span>Finish</span>';
+                } else {
+                    cell.innerHTML = `<span>${i}</span>`;
+                }
+                if (blackHoles.includes(i)) {
+                    cell.classList.add('black-hole');
+                }
+                if (safeZones.includes(i)) {
+                    cell.classList.add('safe-zone');
+                }
+                boardElement.appendChild(cell);
+            }
+        }
+
+        function updateStatus(message) {
+            document.getElementById('status').innerText = message;
+        }
+
+        function rollDice(playerIndex) {
+            if (gameOver) return;
+
+            const player = players[playerIndex];
+            const diceRoll = Math.floor(Math.random() * 6) + 1;
+            updateStatus(`${player.name} rolled a ${diceRoll}.`);
+            if (player.position + diceRoll <= 99) {
+                movePlayer(playerIndex, diceRoll);
+            } else {
+                updateStatus(`${player.name} rolled a ${diceRoll}. Not sufficient moves.`);
+            }
+
+            if (player.position >= 99) {
+                updateStatus(`${player.name} wins!`);
+                gameOver = true;
+                disableAllRollButtons();
+                return;
+            }
+
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.filter(p => p.name).length;
+            enableNextRollButton();
+        }
+
+        function movePlayer(playerIndex, steps) {
+            const player = players[playerIndex];
+            let newPosition = player.position + steps;
+            if (newPosition > 99) newPosition = 99;
+            if (blackHoles.includes(newPosition)) {
+                if (player.inSafeZone) {
+                    updateStatus(`${player.name} encountered a black hole but is immune due to safe zone.`);
+                } else {
+                    newPosition = 0;
+                }
+            }
+            if (safeZones.includes(newPosition)) {
+                player.inSafeZone = true;
+                updateStatus(`${player.name} reached the safe zone!`);
+            }
+            document.getElementById(`cell-${player.position}`).innerHTML = `<span>${player.position === 0 ? 'Start' : player.position}</span>`;
+            document.getElementById(`cell-${newPosition}`).innerHTML = `<div class="token" style="background-color: ${player.color};">${player.name.charAt(0)}</div>`;
+            player.position = newPosition;
+        }
+
+        function enableNextRollButton() {
+            for (let i = 0; i < players.length; i++) {
+                const rollButton = document.getElementById(`rollPlayer${i + 1}`);
+                if (i === currentPlayerIndex && players[i].name) {
+                    rollButton.disabled = false;
+                    rollButton.classList.add('highlight');
+                } else {
+                    rollButton.disabled = true;
+                    rollButton.classList.remove('highlight');
+                }
+            }
+        }
+
+        function disableAllRollButtons() {
+            for (let i = 0; i < players.length; i++) {
+                const rollButton = document.getElementById(`rollPlayer${i + 1}`);
+                rollButton.disabled = true;
+                rollButton.classList.remove('highlight');
+            }
+        }
+
+        function initializeGame() {
+            for (let i = 0; i < players.length; i++) {
+                const playerName = document.getElementById(`player${i + 1}`).value.trim();
+                if (playerName) {
+                    players[i].name = playerName;
+                    document.getElementById(`rollPlayer${i + 1}`).disabled = i !== currentPlayerIndex;
+                } else {
+                    players[i].name = '';
+                    document.getElementById(`rollPlayer${i + 1}`).disabled = true;
+                }
+            }
+            updateStatus('Roll the dice to start the game.');
+        }
+
+        // Initialize the game board
+        createBoard();
+    </script>
+</body>
+</html>
