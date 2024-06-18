@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadra Quest</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .about {
+            margin: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            width: 90%;
+            max-width: 80%;
+        }
+        .about h2 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .about h3 {
+            color: #007bff;
+        }
+        .about p, .about ul, .about ol {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        .about ul, .about ol {
+            padding-left: 20px;
+        }
+        .about li {
+            margin-bottom: 10px;
+        }
+        .about li strong {
+            color: #28a745;
+        }
+        h1{
+          font-size: 3rem;
+        }
+        a{
+          font-size: 2rem;
+          color:white;
+          text-decoration: none;
+          margin: 10px;
+          padding: 5px;
+          background: #007bff;
+          width: 50%;
+        }
+    </style>
+</head>
+<body>
+  <h1>Quadra Quest</h1>
+    <div class="about">
+        <h2>About the Quadra Quest</h2>
+        <p>
+            This is a Quadra Quest board game designed for four players, where each player competes to reach the finish line at position 99. The game involves rolling dice to determine the number of steps a player can move their token. The game board includes special cells such as black holes and safe zones that add an element of strategy and chance.
+        </p>
+        <h3>Objective</h3>
+        <p>
+            The objective of the game is to be the first player to move your token from the start (position 0) to the finish line (position 99).
+        </p>
+        <h3>Game Setup</h3>
+        <ul>
+            <li><strong>Player Names:</strong> Enter the names of the players in the input fields provided for Player 1, Player 2, Player 3, and Player 4.</li>
+            <li><strong>Start Game:</strong> Click the "Start Game" button to initialize the game. Players with entered names will be able to participate, and their respective roll buttons will be enabled in turn.</li>
+        </ul>
+        <h3>Game Board</h3>
+        <p>
+            The board consists of 100 cells arranged in a 10x10 grid. The cells are numbered from 0 (Start) to 99 (Finish).
+        </p>
+        <ul>
+            <li><strong>Black Holes (Red Cells):</strong> Landing on these cells can send you back to the start unless you are in a safe zone.</li>
+            <li><strong>Safe Zones (Green Cells):</strong> Landing on these cells provides immunity from black holes.</li>
+        </ul>
+        <h3>Rules</h3>
+        <ol>
+            <li><strong>Rolling the Dice:</strong> Players take turns rolling the dice by clicking their respective "Roll" button. The player to start the game is Player 1, followed by Player 2, Player 3, and Player 4 in cyclic order.</li>
+            <li><strong>Movement:</strong> A dice roll results in a number between 1 and 6. The token moves forward by the number rolled on the dice. If the move lands the token on a black hole, the token returns to the start unless the token is in a safe zone. Landing on a safe zone marks the token as immune to black holes for future turns.</li>
+            <li><strong>Winning the Game:</strong> The first player to reach or exceed position 99 wins the game. The game announces the winner and disables further rolls.</li>
+            <li><strong>Game Flow:</strong> After each roll, the turn moves to the next player. Players must roll a number that allows their token to land within the board limits (positions 0 to 99). The status message updates with each player's roll result and token movement.</li>
+        </ol>
+        <h3>Special Cells</h3>
+        <ul>
+            <li><strong>Black Holes:</strong> If a player lands on a cell numbered 7, 12, 25, 40, 50, 60, or 94, the player moves back to the start unless they are in a safe zone.</li>
+            <li><strong>Safe Zones:</strong> Cells numbered 2 and 38 provide immunity from black holes for future moves.</li>
+        </ul>
+        <p>Enjoy the game and may the best strategist win!</p>
+        <center>
+         <h2> Let's Play </h2>
+         <a href="four.html">4 Palyers</a> <br> <br>
+         <a href="three.html">3 Players</a> <br> <br>
+         <a href="two.html">2 Players</a> <br> <br>
+         <a href="computer.html">Vs Computer</a> 
+        </center>
+    </div>
+
+</body>
+</html>
