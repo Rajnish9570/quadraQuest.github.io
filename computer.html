@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadra Quest</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(10, 50px);
+            grid-template-rows: repeat(10, 50px);
+            gap: ;
+            margin: 20px 0;
+        }
+        .cell {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 1px 1px 10px  1px gray;
+            position: relative;
+            background-color: #fff;
+     
+        }
+        .cell span {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 15px;
+            color: grey;
+            font-weight: bold;
+            
+        }
+        .token {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+        }
+        .player-token {
+            background-color: blue;
+        }
+        .computer-token {
+            background-color: yellow;
+        }
+        .black-hole {
+            background-color: red;
+        }
+        .safe-zone {
+            background-color: green;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+        }
+        #rollButton{
+            background: blueviolet;
+            color: white;
+            margin: 10px;
+            padding: 5px;
+            font-weight: 900;
+            border: none;
+            height: 50px;
+            width: 50%;
+        }
+        #status{
+            color: blue;
+            font-weight: bold;
+            font-size: 2rem;
+        } 
+    </style>
+</head>
+<body>
+    <p id="status">Roll the dice to start the game.</p>
+    <div class="board">
+
+    </div>
+    <div class="controls">
+       
+    </div>
+    <button id="rollButton" onclick="rollDice()">Roll Dice</button>
+    <script>
+        let playerPosition = 0;
+        let computerPosition = 0;
+        let blackHoles = [7, 12, 25, 40, 50, 60, 94]; // Black hole positions
+        const safeZones = [2, 38]; // Safe zone positions
+        let gameOver = false;
+        let playerInSafeZone = false;
+        let computerInSafeZone = false;
+
+        // Function to create the game board with 100 cells
+        function createBoard() {
+            const boardElement = document.querySelector('.board');
+            for (let i = 0; i < 100; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.id = `cell-${i}`;
+                if (i === 0) {
+                    cell.innerHTML = '<span>Start</span>';
+                } else if (i === 99) {
+                    cell.innerHTML = '<span>Finish</span>';
+                } else {
+                    cell.innerHTML = `<span>${i}</span>`;
+                }
+                if (blackHoles.includes(i)) {
+                    cell.classList.add('black-hole');
+                }
+                if (safeZones.includes(i)) {
+                    cell.classList.add('safe-zone');
+                }
+                boardElement.appendChild(cell);
+            }
+        }
+
+        // Initialize the game board
+        createBoard();
+
+        function rollDice() {
+            if (gameOver) return;
+
+            let diceRoll = Math.floor(Math.random() * 6) + 1;
+            document.getElementById('status').innerText = `You rolled a ${diceRoll}.`;
+            if (playerPosition + diceRoll <= 99) {
+                movePlayer(diceRoll);
+            } else {
+                document.getElementById('status').innerText += ` Not sufficient moves.`;
+            }
+            if (playerPosition >= 99) {
+                document.getElementById('status').innerText = `You rolled a ${diceRoll}. You win!`;
+                gameOver = true;
+                document.getElementById('rollButton').disabled = true;
+                return;
+            }
+            setTimeout(() => {
+                if (gameOver) return;
+                let computerRoll = Math.floor(Math.random() * 6) + 1;
+                if (computerPosition + computerRoll <= 99) {
+                    moveComputer(computerRoll);
+                }
+                if (computerPosition >= 99) {
+                    document.getElementById('status').innerText += ` Computer rolled a ${computerRoll}. Computer wins!`;
+                    gameOver = true;
+                    document.getElementById('rollButton').disabled = true;
+                } else {
+                    document.getElementById('status').innerText += ` Computer rolled a ${computerRoll}.`;
+                }
+            }, 1000);
+        }
+
+        function movePlayer(steps) {
+            let newPosition = playerPosition + steps;
+            if (newPosition > 99) newPosition = 99;
+            if (blackHoles.includes(newPosition)) {
+                if (playerInSafeZone) {
+                    document.getElementById('status').innerText += ` Player encountered a black hole but is immune due to safe zone.`;
+                } else {
+                    newPosition = 0; // Move back to the starting cell if a black hole is encountered
+                }
+            }
+            if (safeZones.includes(newPosition)) {
+                playerInSafeZone = true;
+                document.getElementById('status').innerText += ` Player reached the safe zone!`;
+            }
+            if (playerPosition === 0) {
+                document.getElementById(`cell-${playerPosition}`).innerHTML = '<span>Start</span>';
+            } else {
+                document.getElementById(`cell-${playerPosition}`).innerHTML = `<span>${playerPosition}</span>`;
+            }
+            document.getElementById(`cell-${newPosition}`).innerHTML = `<div class="token player-token">P</div>`;
+            playerPosition = newPosition;
+        }
+
+        function moveComputer(steps) {
+            let newPosition = computerPosition + steps;
+            if (newPosition > 99) newPosition = 99;
+            if (blackHoles.includes(newPosition)) {
+                if (computerInSafeZone) {
+                    document.getElementById('status').innerText += ` Computer encountered a black hole but is immune due to safe zone.`;
+                } else {
+                    newPosition = 0; // Move back to the starting cell if a black hole is encountered
+                }
+            }
+            if (safeZones.includes(newPosition)) {
+                computerInSafeZone = true;
+                document.getElementById('status').innerText += ` Computer reached the safe zone!`;
+            }
+            if (computerPosition === 0) {
+                document.getElementById(`cell-${computerPosition}`).innerHTML = '<span>Start</span>';
+            } else {
+                document.getElementById(`cell-${computerPosition}`).innerHTML = `<span>${computerPosition}</span>`;
+            }
+            document.getElementById(`cell-${newPosition}`).innerHTML = `<div class="token computer-token">C</div>`;
+            computerPosition = newPosition;
+        }
+    </script>
+</body>
+</html>
