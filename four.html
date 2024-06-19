@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quadra Quest</title>
     <style>
-        body {
+         body {
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
@@ -31,9 +31,6 @@
             width: 100%;
             padding-top: 100%;
             position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             box-shadow: 1px 1px 10px 1px gray;
             background-color: #fff;
         }
@@ -55,6 +52,9 @@
             font-weight: bold;
             color: #fff;
             position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
         .controls {
             display: flex;
@@ -120,8 +120,7 @@
                 grid-template-rows: repeat(10, 10%);
             }
         }
-    </style>
-</head>
+        </style>
 <body>
     <div class="controls">
         <p id="status">Enter player names and roll the dice to start the game.</p>
