@@ -119,11 +119,16 @@
                 grid-template-columns: repeat(10, 10%);
                 grid-template-rows: repeat(10, 10%);
             }
+
+            #status{
+                font-size:0.5rem;
+                text-align:center;
+            }
         }
  </style>
 </head>
 <body>
-    <p id="status">Enter player names and roll the dice to start the game.</p>
+
     <div class="controls">
         <div class="players">
             <div class="player">
@@ -142,6 +147,7 @@
         <button onclick="initializeGame()">Start Game</button>
     </div>
     <div class="board"></div>
+        <p id="status">Enter player names and roll the dice to start the game.</p>
     <script>
         const players = [
             { name: '', position: 0, inSafeZone: false, color: 'blue' },
