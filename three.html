@@ -119,11 +119,15 @@
                 grid-template-columns: repeat(10, 10%);
                 grid-template-rows: repeat(10, 10%);
             }
+            #status{
+                font-size:0.5rem;
+                text-align:center;
         }
+            }
  </style>
 </head>
 <body>
-    <p id="status">Enter player names and roll the dice to start the game.</p>
+    <h1>Quadra Quest</h1>
     <div class="controls">
         <div class="players">
             <div class="player">
@@ -134,14 +138,16 @@
                 <input type="text" id="player2" placeholder="Player 2">
                 <button class="rollButton" id="rollPlayer2" style="background: yellow;" onclick="rollDice(1)" disabled>Roll P2</button>
             </div>
-            <div class="player">
-                <input type="text" id="player3" placeholder="Player 3">
-                <button class="rollButton" id="rollPlayer3" style="background: green;" onclick="rollDice(2)" disabled>Roll P3</button>
-            </div>
+        
         </div>
-        <button onclick="initializeGame()">Start Game</button>
     </div>
     <div class="board"></div>
+        <p id="status">Enter player names and roll the dice to start the game.</p>
+        <div class="player">
+                <input type="text" id="player3" placeholder="Player 3">
+                <button class="rollButton" id="rollPlayer3" style="background: green;" onclick="rollDice(2)" disabled>Roll P3</button>
+        </div>
+        <button onclick="initializeGame()">Start Game</button>
     <script>
         const players = [
             { name: '', position: 0, inSafeZone: false, color: 'blue' },
