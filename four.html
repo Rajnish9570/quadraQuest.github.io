@@ -13,22 +13,28 @@
             margin: 0;
             padding: 0;
             background-color: #fff;
-         
+        }
+        .board-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
         .board {
             display: grid;
-            grid-template-columns: repeat(10, 50px);
-            grid-template-rows: repeat(10, 50px);
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
             margin: 20px 0;
+            max-width: 500px;
+            width: 100%;
         }
         .cell {
-            width: 50px;
-            height: 50px;
+            width: 100%;
+            padding-top: 100%;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 1px 1px 10px 1px gray;
-            position: relative;
             background-color: #fff;
         }
         .cell span {
@@ -48,6 +54,7 @@
             justify-content: center;
             font-weight: bold;
             color: #fff;
+            position: absolute;
         }
         .controls {
             display: flex;
@@ -58,11 +65,14 @@
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         .player {
             display: flex;
             flex-direction: column;
             align-items: center;
+            margin: 5px;
         }
         .player input {
             margin-bottom: 5px;
@@ -77,6 +87,7 @@
             font-weight: bold;
             font-size: 2rem;
             margin-bottom: 10px;
+            text-align: center;
         }
         .black-hole {
             background-color: red;
@@ -95,7 +106,7 @@
             width: 100px;
         }
         .highlight {
-            border: 3px solid black; 
+            border: 3px solid black;
         }
         input {
             border: none;
@@ -103,11 +114,17 @@
             outline: none;
             padding: 10px;
         }
+        @media (max-width: 600px) {
+            .board {
+                grid-template-columns: repeat(10, 10%);
+                grid-template-rows: repeat(10, 10%);
+            }
+        }
     </style>
 </head>
 <body>
-    <p id="status">Enter player names and roll the dice to start the game.</p>
     <div class="controls">
+        <p id="status">Enter player names and roll the dice to start the game.</p>
         <div class="players">
             <div class="player">
                 <input type="text" id="player1" placeholder="Player 1">
@@ -117,6 +134,13 @@
                 <input type="text" id="player2" placeholder="Player 2">
                 <button class="rollButton" id="rollPlayer2" style="background: yellow;" onclick="rollDice(1)" disabled>Roll P2</button>
             </div>
+        </div>
+    </div>
+    <div class="board-container">
+        <div class="board"></div>
+    </div>
+    <div class="controls">
+        <div class="players">
             <div class="player">
                 <input type="text" id="player3" placeholder="Player 3">
                 <button class="rollButton" id="rollPlayer3" style="background: green;" onclick="rollDice(2)" disabled>Roll P3</button>
@@ -128,7 +152,6 @@
         </div>
         <button onclick="initializeGame()">Start Game</button>
     </div>
-    <div class="board"></div>
     <script>
         const players = [
             { name: '', position: 0, inSafeZone: false, color: 'blue' },
