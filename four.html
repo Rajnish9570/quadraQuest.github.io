@@ -119,11 +119,14 @@
                 grid-template-columns: repeat(10, 10%);
                 grid-template-rows: repeat(10, 10%);
             }
+            #status{
+                font-size:0.5rem;
+                text-align:center;
+        }
         }
         </style>
 <body>
     <div class="controls">
-        <p id="status">Enter player names and roll the dice to start the game.</p>
         <div class="players">
             <div class="player">
                 <input type="text" id="player1" placeholder="Player 1">
@@ -138,6 +141,7 @@
     <div class="board-container">
         <div class="board"></div>
     </div>
+    <p id="status">Enter player names and roll the dice to start the game.</p>
     <div class="controls">
         <div class="players">
             <div class="player">
