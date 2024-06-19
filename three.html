@@ -144,10 +144,11 @@
                 <button class="rollButton" id="rollPlayer3" style="background: green;" onclick="rollDice(2)" disabled>Roll P3</button>
             </div>
         </div>
-        <button onclick="initializeGame()">Start Game</button>
+
     </div>
     <div class="board"></div>
         <p id="status">Enter player names and roll the dice to start the game.</p>
+            <button onclick="initializeGame()">Start Game</button>
     <script>
         const players = [
             { name: '', position: 0, inSafeZone: false, color: 'blue' },
