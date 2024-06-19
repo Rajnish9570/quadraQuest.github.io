@@ -64,7 +64,8 @@
         .players {
             display: flex;
             gap: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
             justify-content: center;
         }
         .player {
@@ -76,7 +77,6 @@
         .player input {
             margin-bottom: 5px;
             text-align: center;
-            width:40%
         }
         button {
             padding: 10px;
@@ -119,15 +119,11 @@
                 grid-template-columns: repeat(10, 10%);
                 grid-template-rows: repeat(10, 10%);
             }
-            #status{
-                font-size:0.5rem;
-                text-align:center;
         }
-            }
  </style>
 </head>
 <body>
-    <h1>Quadra Quest</h1>
+    <p id="status">Enter player names and roll the dice to start the game.</p>
     <div class="controls">
         <div class="players">
             <div class="player">
@@ -143,10 +139,9 @@
                 <button class="rollButton" id="rollPlayer3" style="background: green;" onclick="rollDice(2)" disabled>Roll P3</button>
             </div>
         </div>
+        <button onclick="initializeGame()">Start Game</button>
     </div>
     <div class="board"></div>
-        <p id="status">Enter player names and roll the dice to start the game.</p>
-        <button onclick="initializeGame()">Start Game</button>
     <script>
         const players = [
             { name: '', position: 0, inSafeZone: false, color: 'blue' },
@@ -163,7 +158,7 @@
             for (let i = 0; i < 100; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
-                cell.id = `ce`;
+                cell.id = `cell-${i}`;
                 if (i === 0) {
                     cell.innerHTML = '<span>Start</span>';
                 } else if (i === 99) {
@@ -267,4 +262,4 @@
         createBoard();
     </script>
 </body>
-</html>
+    </html>
