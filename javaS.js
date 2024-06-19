@@ -1,4 +1,9 @@
-
+// Disable zooming with mouse wheel and touchpad
+document.addEventListener('wheel', function(e) {
+    if (e.ctrlKey) {
+        e.preventDefault();
+    }
+}, { passive: false });
 
 // Disable zooming with keyboard shortcuts
 document.addEventListener('keydown', function(e) {
