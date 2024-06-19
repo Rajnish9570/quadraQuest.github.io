@@ -18,7 +18,7 @@
             display: grid;
             grid-template-columns: repeat(10, 50px);
             grid-template-rows: repeat(10, 50px);
-            margin: 20px 0;
+            margin: 0;
             width: 100%;
             max-width: 500px;
         }
@@ -159,9 +159,9 @@
                 cell.className = 'cell';
                 cell.id = `cell-${i}`;
                 if (i === 0) {
-                    cell.innerHTML = '<span>Start</span>';
+                    cell.innerHTML = '<span>St..</span>';
                 } else if (i === 99) {
-                    cell.innerHTML = '<span>Finish</span>';
+                    cell.innerHTML = '<span>Fin..</span>';
                 } else {
                     cell.innerHTML = `<span>${i}</span>`;
                 }
