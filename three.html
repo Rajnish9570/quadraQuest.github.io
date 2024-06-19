@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quadra Quest</title>
     <style>
-        body {
+         body {
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
@@ -14,22 +14,24 @@
             padding: 0;
             background-color: #fff;
         }
+        .board-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
         .board {
             display: grid;
-            grid-template-columns: repeat(10, 50px);
-            grid-template-rows: repeat(10, 50px);
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
             margin: 20px 0;
-            width: 100%;
             max-width: 500px;
+            width: 100%;
         }
         .cell {
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 1px 1px 10px 1px gray;
+            width: 100%;
+            padding-top: 100%;
             position: relative;
+            box-shadow: 1px 1px 10px 1px gray;
             background-color: #fff;
         }
         .cell span {
@@ -49,6 +51,10 @@
             justify-content: center;
             font-weight: bold;
             color: #fff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
         .controls {
             display: flex;
@@ -59,11 +65,14 @@
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         .player {
             display: flex;
             flex-direction: column;
             align-items: center;
+            margin: 5px;
         }
         .player input {
             margin-bottom: 5px;
@@ -78,6 +87,7 @@
             font-weight: bold;
             font-size: 2rem;
             margin-bottom: 10px;
+            text-align: center;
         }
         .black-hole {
             background-color: red;
@@ -96,7 +106,7 @@
             width: 100px;
         }
         .highlight {
-            border: 3px solid black; 
+            border: 3px solid black;
         }
         input {
             border: none;
@@ -104,18 +114,13 @@
             outline: none;
             padding: 10px;
         }
-
-        @media only screen and (max-width: 768px) {
+        @media (max-width: 600px) {
             .board {
-                grid-template-columns: repeat(10, calc(10vw - 1px));
-                grid-template-rows: repeat(10, calc(10vw - 1px));
-            }
-            .cell {
-                width: calc(10vw - 1px);
-                height: calc(10vw - 1px);
+                grid-template-columns: repeat(10, 10%);
+                grid-template-rows: repeat(10, 10%);
             }
         }
-    </style>
+ </style>
 </head>
 <body>
     <p id="status">Enter player names and roll the dice to start the game.</p>
