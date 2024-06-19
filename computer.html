@@ -80,8 +80,7 @@
         }
         #status {
             color: blue;
-            font-weight: bold;
-            font-size: 2rem;
+            font-weight: bold    font-size: 2rem;
         }
         @media only screen and (max-width: 768px) {
             .board {
@@ -101,9 +100,9 @@
 </head>
 <body>
     <h1>Quadra Quest</h1>
-    <p id="status">Roll the dice to start the game.</p>
     <div class="board"></div>
     <div class="controls"></div>
+    <p id="status">Roll the dice to start the game.</p>
     <button id="rollButton" onclick="rollDice()">Roll Dice</button>
     <script>
         let playerPosition = 0;
