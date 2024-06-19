@@ -1,5 +1,4 @@
-
-   // Disable text selection
+ // Disable text selection
         document.addEventListener('selectstart', function(e) {
             e.preventDefault();
         });
@@ -29,7 +28,7 @@
         }, { passive: false });
 
         document.addEventListener('touchmove', function (e) {
-            if (e.scale !== 1) {
+            if (e.scale && e.scale !== 1) {
                 e.preventDefault();
             }
         }, { passive: false });
