@@ -138,15 +138,14 @@
                 <input type="text" id="player2" placeholder="Player 2">
                 <button class="rollButton" id="rollPlayer2" style="background: yellow;" onclick="rollDice(1)" disabled>Roll P2</button>
             </div>
-        
+            <div class="player">
+                <input type="text" id="player3" placeholder="Player 3">
+                <button class="rollButton" id="rollPlayer3" style="background: green;" onclick="rollDice(2)" disabled>Roll P3</button>
+            </div>
         </div>
     </div>
     <div class="board"></div>
         <p id="status">Enter player names and roll the dice to start the game.</p>
-        <div class="player">
-                <input type="text" id="player3" placeholder="Player 3">
-                <button class="rollButton" id="rollPlayer3" style="background: green;" onclick="rollDice(2)" disabled>Roll P3</button>
-        </div>
         <button onclick="initializeGame()">Start Game</button>
     <script>
         const players = [
@@ -164,7 +163,7 @@
             for (let i = 0; i < 100; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
-                cell.id = `cell-${i}`;
+                cell.id = `ce`;
                 if (i === 0) {
                     cell.innerHTML = '<span>Start</span>';
                 } else if (i === 99) {
