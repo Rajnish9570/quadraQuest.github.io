@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplayer Board Game Rules</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .rule-section {
+            margin-bottom: 20px;
+        }
+        .rule-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .rule-description {
+            margin-left: 20px;
+        }
+        .example {
+            font-style: italic;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Multiplayer Board Game Rules</h1>
+
+    <div class="rule-section">
+        <div class="rule-title">Objective:</div>
+        <div class="rule-description">
+            The first player to reach the 100th cell on the board wins the game.
+        </div>
+    </div>
+
+    <div class="rule-section">
+        <div class="rule-title">Setup:</div>
+        <div class="rule-description">
+            <ol>
+                <li><strong>Players:</strong> The game can be played by 2 to 6 players.</li>
+                <li><strong>Board:</strong> The board is a grid with 100 cells, labeled from 1 to 100.</li>
+                <li><strong>Tokens:</strong> Each player has a unique token which starts at cell 1.</li>
+                <li><strong>Zones:</strong>
+                    <ul>
+                        <li><strong>Danger Zones:</strong> 20 cells where players may face setbacks.</li>
+                        <li><strong>Safe Zones:</strong> 10 cells where players gain temporary protection from danger zones.</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="rule-section">
+        <div class="rule-title">Starting the Game:</div>
+        <div class="rule-description">
+            <ol>
+                <li><strong>Number of Players:</strong> Choose the number of players (between 2 and 6).</li>
+                <li><strong>Player Names:</strong> Enter names for each player. Default names (p1, p2, etc.) can be used if no names are provided.</li>
+                <li><strong>Game Start:</strong> Press the "Start Game" button to initialize the board.</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="rule-section">
+        <div class="rule-title">Taking Turns:</div>
+        <div class="rule-description">
+            <ol>
+                <li><strong>Roll Dice:</strong> On your turn, press the "Roll Dice" button to roll a 6-sided die.</li>
+                <li><strong>Move Token:</strong> Move your token forward by the number of spaces shown on the die.
+                    <ul>
+                        <li>If the token lands on or passes the last cell (100), the move is invalid unless the exact number to reach 100 is rolled.</li>
+                    </ul>
+                </li>
+                <li><strong>Zone Effects:</strong> After moving, apply the effects of any zone you land on.
+                    <ul>
+                        <li><strong>Danger Zones (Red Cells):</strong>
+                            <ul>
+                                <li>If you land on a danger zone and do not have protection, you must move back by a randomly determined number of steps (1 to 6).</li>
+                                <li>If you have protection, the danger zone is negated, and you lose one protection.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Safe Zones (Blue Cells):</strong>
+                            <ul>
+                                <li>The first time you land on a safe zone, you gain one-time protection from danger zones.</li>
+                                <li>If you land on another safe zone consecutively without hitting a danger zone in between, all safe zone benefits are canceled.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="rule-section">
+        <div class="rule-title">Special Rules:</div>
+        <div class="rule-description">
+            <ul>
+                <li><strong>Protection:</strong> Protection can only negate the effect of a danger zone once.</li>
+                <li><strong>Consecutive Safe Zones:</strong> Hitting consecutive safe zones without hitting a danger zone will cancel all current and future safe zone benefits for that player.</li>
+                <li><strong>Carry-Over Steps:</strong> If a player’s movement is reduced to a negative position due to danger zone setbacks, the extra steps are carried over and deducted from the next dice roll.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="rule-section">
+        <div class="rule-title">Winning the Game:</div>
+        <div class="rule-description">
+            <ul>
+                <li>The first player to land exactly on the 100th cell wins the game.</li>
+                <li>If the rolled number is too high to land exactly on 100, the player stays in place.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="rule-section">
+        <div class="rule-title">Game End:</div>
+        <div class="rule-description">
+            <ul>
+                <li>The game ends immediately when a player reaches the 100th cell.</li>
+                <li>The "Roll Dice" button will be disabled, and a "Restart Game" button will appear to start a new game.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="rule-section">
+        <div class="rule-title">Restarting the Game:</div>
+        <div class="rule-description">
+            <ul>
+                <li>Press the "Restart Game" button to reset the game and start over.</li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+</html>
