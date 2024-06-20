@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multiplayer Board Game with Dice and Tokens</title>
     <style>
-        body {
+           body {
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
@@ -17,18 +17,18 @@
             display: grid;
             grid-template-columns: repeat(10, 1fr);
             grid-auto-rows: 1fr;
-            gap: 5px;
+     
             width: 100%;
             max-width: 800px;
             aspect-ratio: 2 / 1;
-            margin: 20px;
+            margin: 10px;
         }
         .cell {
             background-color: white;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 1px solid #333;
+            border: 0.1px solid #333;
             position: relative;
             font-size: calc(10px + 0.5vw);
         }
@@ -47,33 +47,30 @@
             background-color: red;
         }
         .safe {
-            background-color: green;
+            background-color: blueviolet;
         }
         button {
-            padding: 10px 20px;
+          
             font-size: 1rem;
             cursor: pointer;
             margin-top: 10px;
         }
         .info {
-            margin: 20px;
+            margin: 10px;
             text-align: center;
         }
         .message-box {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #333;
-            background-color: #fff;
-            width: 300px;
+            margin-top: 6px;
+
             text-align: center;
         }
         .player-input {
-            margin-top: 10px;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
-    <h1>Multiplayer Board Game with Dice and Tokens</h1>
+    <div class="message-box" id="messageBox"></div>
     <div class="info">
         <label for="numPlayers">Number of Players:</label>
         <input type="number" id="numPlayers" min="2" max="6" value="2">
@@ -87,7 +84,7 @@
         <p id="diceResult">Roll the dice to start!</p>
         <button id="restartButton" style="display: none;">Restart Game</button>
     </div>
-    <div class="message-box" id="messageBox"></div>
+    
     <script>
         const boardElement = document.getElementById('board');
         const rollDiceButton = document.getElementById('rollDiceButton');
@@ -102,12 +99,14 @@
         const dangerZones = [];
         const safeZones = [];
         const playerColors = ['blue', 'yellow', 'green', 'red', 'purple', 'orange'];
+        const defaultPlayerNames = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6']; // Default player names
         let cells = [];
         let currentPlayer = 0;
         let positions = [];
         let protection = [];
         let gameActive = false;
         let playerNames = [];
+        let carryOverSteps = []; // Array to hold carry over steps for each player
 
         function createBoard() {
             boardElement.innerHTML = ''; // Clear the board
@@ -177,7 +176,12 @@
             if (dangerZones.includes(pos) && !protection[player]) {
                 let setback = Math.floor(Math.random() * 6) + 1;
                 setMessage(`${playerNames[player]} hit a danger zone! Moving back ${setback} steps.`);
-                positions[player] = Math.max(0, positions[player] - setback);
+                if (setback > pos) {
+                    carryOverSteps[player] += (setback - pos);
+                    positions[player] = 0;
+                } else {
+                    positions[player] = pos - setback;
+                }
             } else if (safeZones.includes(pos)) {
                 setMessage(`${playerNames[player]} hit a safe zone! Protection granted.`);
                 protection[player] = true;
@@ -196,7 +200,7 @@
                 const playerToken = document.createElement('div');
                 playerToken.classList.add('token');
                 playerToken.style.backgroundColor = playerColors[index];
-                playerToken.textContent = playerNames[index].charAt(0); // Display the first letter of the player's name
+                playerToken.textContent = playerNames[index]; // Display player's name
                 cells[position].appendChild(playerToken);
             });
         }
@@ -210,7 +214,7 @@
                 input.placeholder = `Player ${i + 1} Name`;
                 input.id = `playerName${i}`;
                 playerNamesContainer.appendChild(input);
-                playerNames.push(`Player ${i + 1}`);
+                playerNames.push(defaultPlayerNames[i]); // Default names p1, p2, ..., p6
             }
         }
 
@@ -224,11 +228,12 @@
             playerNames = [];
             for (let i = 0; i < numPlayers; i++) {
                 const playerNameInput = document.getElementById(`playerName${i}`);
-                playerNames.push(playerNameInput.value || `Player ${i + 1}`);
+                playerNames.push(playerNameInput.value || defaultPlayerNames[i]); // Use default names if input is empty
             }
 
             positions = Array(numPlayers).fill(0);
             protection = Array(numPlayers).fill(false);
+            carryOverSteps = Array(numPlayers).fill(0); // Initialize carry over steps
             currentPlayer = 0;
             gameActive = true;
 
@@ -250,23 +255,23 @@
 
         rollDiceButton.addEventListener('click', () => {
             if (!gameActive) return;
-            const diceRoll = rollDice();
-            diceResultElement.textContent = `${playerNames[currentPlayer]} rolled a ${diceRoll}`;
-            movePlayer(currentPlayer, diceRoll);
-            currentPlayer = (currentPlayer + 1) % positions.length;
-            turnInfoElement.textContent = `${playerNames[currentPlayer]}'s turn`;
+            let diceRoll = rollDice();
+            let totalSteps = diceRoll - carryOverSteps[currentPlayer];
+            carryOverSteps[currentPlayer] = 0; // Reset carry over steps after use
+            diceResultElement.textContent = `${playerNames[currentPlayer]} rolled a ${diceRoll}. Total move: ${totalSteps}`;
+            movePlayer(currentPlayer, totalSteps);
+            if (gameActive) {
+                currentPlayer = (currentPlayer + 1) % positions.length;
+                turnInfoElement.textContent = `${playerNames[currentPlayer]}'s turn`;
+            }
         });
 
-        restartButton.addEventListener('click', () => {
-            playerNamesContainer.style.display = 'block'; // Show player name inputs
-            startGame();
-        });
+        restartButton.addEventListener('click', startGame);
 
         startGameButton.addEventListener('click', startGame);
 
-        // Initial call to set up player inputs
-        createPlayerInputs(numPlayersInput.value);
-        createBoard();
+        // Initialize with default number of players
+        createPlayerInputs(2);
     </script>
 </body>
 </html>
