@@ -17,7 +17,6 @@
             display: grid;
             grid-template-columns: repeat(10, 1fr);
             grid-auto-rows: 1fr;
-     
             width: 100%;
             max-width: 800px;
             aspect-ratio: 2 / 1;
@@ -50,7 +49,6 @@
             background-color: blueviolet;
         }
         button {
-          
             font-size: 1rem;
             cursor: pointer;
             margin-top: 10px;
@@ -61,13 +59,12 @@
         }
         .message-box {
             margin-top: 6px;
-
             text-align: center;
         }
         .player-input {
             margin-top: 5px;
         }
-            </style>
+    </style>
 </head>
 <body>
     <div class="message-box" id="messageBox"></div>
@@ -85,7 +82,6 @@
         <button id="restartButton" style="display: none;">Restart Game</button>
     </div>
 
-    <a href="rulesBook.html"> Rules Book of game</a>
     <script>
         const boardElement = document.getElementById('board');
         const rollDiceButton = document.getElementById('rollDiceButton');
@@ -108,6 +104,7 @@
         let gameActive = false;
         let playerNames = [];
         let carryOverSteps = []; // Array to hold carry over steps for each player
+        let consecutiveSafeZones = []; // Array to track consecutive safe zone hits
 
         function createBoard() {
             boardElement.innerHTML = ''; // Clear the board
@@ -174,18 +171,33 @@
 
         function handleZoneEffect(player) {
             let pos = positions[player];
-            if (dangerZones.includes(pos) && !protection[player]) {
-                let setback = Math.floor(Math.random() * 6) + 1;
-                setMessage(`${playerNames[player]} hit a danger zone! Moving back ${setback} steps.`);
-                if (setback > pos) {
-                    carryOverSteps[player] += (setback - pos);
-                    positions[player] = 0;
+            if (dangerZones.includes(pos)) {
+                if (protection[player] === 0) {
+                    let setback = Math.floor(Math.random() * 6) + 1;
+                    setMessage(`${playerNames[player]} hit a danger zone! Moving back ${setback} steps.`);
+                    if (setback > pos) {
+                        carryOverSteps[player] += (setback - pos);
+                        positions[player] = 0;
+                    } else {
+                        positions[player] = pos - setback;
+                    }
                 } else {
-                    positions[player] = pos - setback;
+                    setMessage(`${playerNames[player]} hit a danger zone but is protected!`);
+                    protection[player]--; // Decrement protection count
                 }
+                consecutiveSafeZones[player] = 0; // Reset consecutive safe zone hits
             } else if (safeZones.includes(pos)) {
-                setMessage(`${playerNames[player]} hit a safe zone! Protection granted.`);
-                protection[player] = true;
+                if (consecutiveSafeZones[player] > 0) {
+                    setMessage(`${playerNames[player]} hit another safe zone! Cancelling all safe zone benefits.`);
+                    protection[player] = 0; // Cancel protection
+                    consecutiveSafeZones[player] = 0; // Reset consecutive safe zone hits
+                } else {
+                    setMessage(`${playerNames[player]} hit a safe zone! Protection granted.`);
+                    protection[player] = 1; // Grant one-time protection
+                    consecutiveSafeZones[player]++; // Track consecutive safe zone hits
+                }
+            } else {
+                consecutiveSafeZones[player] = 0; // Reset if not on a safe zone
             }
         }
 
@@ -233,8 +245,9 @@
             }
 
             positions = Array(numPlayers).fill(0);
-            protection = Array(numPlayers).fill(false);
+            protection = Array(numPlayers).fill(0);
             carryOverSteps = Array(numPlayers).fill(0); // Initialize carry over steps
+            consecutiveSafeZones = Array(numPlayers).fill(0); // Initialize consecutive safe zone hits
             currentPlayer = 0;
             gameActive = true;
 
@@ -276,4 +289,3 @@
     </script>
 </body>
 </html>
-
