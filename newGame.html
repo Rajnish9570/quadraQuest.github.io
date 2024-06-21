@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiplayer Board Game with Dice and Tokens</title>
+    <title>Player vs Computer Board Game with Dice and Tokens</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -98,20 +97,6 @@
             width: 90%;
             text-align: center;
         }
-        .player-input {
-            margin-top: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-        .player-input input {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1rem;
-            width: calc(100% / 2 - 20px); /* Adjust width for inputs */
-        }
         a {
             display: block;
             margin-top: 10px;
@@ -126,12 +111,6 @@
 </head>
 <body>
     <div class="message-box" id="messageBox"></div>
-    <div class="info">
-        <label for="numPlayers">Number of Players (excluding computer):</label>
-        <input type="number" id="numPlayers" min="1" max="5" value="1">
-        <button id="startGameButton">Start Game</button>
-        <div id="playerNamesContainer" class="player-input"></div>
-    </div>
     <div class="board-container">
         <div class="board" id="board"></div>
     </div>
@@ -149,23 +128,19 @@
         const turnInfoElement = document.getElementById('turnInfo');
         const restartButton = document.getElementById('restartButton');
         const messageBox = document.getElementById('messageBox');
-        const startGameButton = document.getElementById('startGameButton');
-        const numPlayersInput = document.getElementById('numPlayers');
-        const playerNamesContainer = document.getElementById('playerNamesContainer');
         const boardSize = 100;
         const dangerZones = [];
         const safeZones = [];
-        const playerColors = ['blue', 'yellow', 'green', 'red', 'purple', 'orange'];
-        const defaultPlayerNames = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'Computer']; // Default player names including computer
+        const playerColors = ['blue', 'red'];
+        const playerNames = ['Player', 'Computer'];
         let cells = [];
         let currentPlayer = 0;
-        let positions = [];
-        let protection = [];
+        let positions = [0, 0];
+        let protection = [0, 0];
         let gameActive = false;
-        let playerNames = [];
-        let carryOverSteps = []; // Array to hold carry over steps for each player
-        let consecutiveSafeZones = []; // Array to track consecutive safe zone hits
-        let consecutiveDangerZones = []; // Array to track consecutive danger zone hits
+        let carryOverSteps = [0, 0];
+        let consecutiveSafeZones = [0, 0];
+        let consecutiveDangerZones = [0, 0];
 
         function createBoard() {
             boardElement.innerHTML = ''; // Clear the board
@@ -277,7 +252,7 @@
                 const token = document.createElement('div');
                 token.classList.add('token');
                 token.style.backgroundColor = playerColors[index];
-                token.textContent = defaultPlayerNames[index].charAt(0).toUpperCase(); // Display the first letter of the player's name on the token
+                token.textContent = playerNames[index].charAt(0).toUpperCase(); // Display 'P' for Player and 'C' for Computer
                 cells[pos].appendChild(token);
             });
         }
@@ -285,15 +260,15 @@
         function nextTurn() {
             currentPlayer = (currentPlayer + 1) % playerNames.length;
             turnInfoElement.textContent = `${playerNames[currentPlayer]}'s turn`;
-            rollDiceButton.disabled = currentPlayer === playerNames.length - 1;
-            if (currentPlayer === playerNames.length - 1) {
+            rollDiceButton.disabled = currentPlayer === 1; // Disable roll dice button for computer's turn
+            if (currentPlayer === 1) {
                 setTimeout(() => {
                     let steps = rollDice();
                     diceResultElement.textContent = `Computer rolled a ${steps}`;
                     movePlayer(currentPlayer, steps);
-                    currentPlayer = (currentPlayer + 1) % playerNames.length;
-                    turnInfoElement.textContent = `${playerNames[currentPlayer]}'s turn`;
-                    rollDiceButton.disabled = false;
+                    if (gameActive) {
+                        nextTurn();
+                    }
                 }, 1000);
             }
         }
@@ -303,53 +278,23 @@
         }
 
         function initializeGame() {
-            let numPlayers = parseInt(numPlayersInput.value);
-            playerNames = [];
-            positions = [];
-            protection = [];
-            carryOverSteps = [];
-            consecutiveSafeZones = [];
-            consecutiveDangerZones = [];
+            playerNames[0] = 'Player';
+            playerNames[1] = 'Computer';
 
-            for (let i = 0; i < numPlayers; i++) {
-                let playerNameInput = document.getElementById(`playerName${i}`);
-                let playerName = playerNameInput ? playerNameInput.value.trim() : '';
-                playerNames.push(playerName || defaultPlayerNames[i]);
-            }
-
-            playerNames.push('Computer'); // Add computer as the last player
-
-            for (let i = 0; i < playerNames.length; i++) {
-                positions.push(0);
-                protection.push(0);
-                carryOverSteps.push(0);
-                consecutiveSafeZones.push(0);
-                consecutiveDangerZones.push(0);
-            }
+            positions = [0, 0];
+            protection = [0, 0];
+            carryOverSteps = [0, 0];
+            consecutiveSafeZones = [0, 0];
+            consecutiveDangerZones = [0, 0];
 
             currentPlayer = 0;
             turnInfoElement.textContent = `${playerNames[currentPlayer]}'s turn`;
             gameActive = true;
             rollDiceButton.disabled = false;
+            rollDiceButton.style.display = 'inline-block'; // Show the roll dice button
             restartButton.style.display = 'none'; // Hide the restart button
             createBoard();
         }
-
-        startGameButton.addEventListener('click', () => {
-            playerNamesContainer.innerHTML = ''; // Clear previous input fields
-            let numPlayers = parseInt(numPlayersInput.value);
-            for (let i = 0; i < numPlayers; i++) {
-                let input = document.createElement('input');
-                input.type = 'text';
-                input.id = `playerName${i}`;
-                input.placeholder = `Player ${i + 1} Name`;
-                playerNamesContainer.appendChild(input);
-            }
-            let startButton = document.createElement('button');
-            startButton.textContent = 'Start';
-            startButton.addEventListener('click', initializeGame);
-            playerNamesContainer.appendChild(startButton);
-        });
 
         rollDiceButton.addEventListener('click', () => {
             if (!gameActive) return;
@@ -365,7 +310,7 @@
             location.reload(); // Reload the page to restart the game
         });
 
-        createBoard();
+        initializeGame();
     </script>
 </body>
 </html>
