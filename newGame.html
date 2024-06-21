@@ -143,19 +143,20 @@
         let consecutiveDangerZones = [0, 0];
 
         function createBoard() {
-            boardElement.innerHTML = ''; // Clear the board
-            cells = [];
-            for (let i = 0; i < boardSize; i++) {
-                const cell = document.createElement('div');
-                cell.classList.add('cell');
-                cell.dataset.index = i;
-                cell.textContent = i + 1; // Label cells from 1 to 100
-                boardElement.appendChild(cell);
-                cells.push(cell);
-            }
-            assignZones();
-            updateBoard();
-        }
+    boardElement.innerHTML = ''; // Clear the board
+    cells = [];
+    for (let i = 0; i < boardSize; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.index = i;
+        cell.textContent = i + 1; // Label cells from 1 to 100
+        boardElement.appendChild(cell);
+        cells.push(cell);
+    }
+    assignZones();
+    updateBoard();
+}
+
 
         function assignZones() {
             dangerZones.length = 0; // Clear previous zones
