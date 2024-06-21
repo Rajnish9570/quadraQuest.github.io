@@ -115,6 +115,7 @@
         let playerNames = [];
         let carryOverSteps = []; // Array to hold carry over steps for each player
         let consecutiveSafeZones = []; // Array to track consecutive safe zone hits
+        let consecutiveDangerZones = []; // Array to track consecutive danger zone hits
 
         function createBoard() {
             boardElement.innerHTML = ''; // Clear the board
@@ -183,6 +184,7 @@
             let pos = positions[player];
             if (dangerZones.includes(pos)) {
                 if (protection[player] === 0) {
+                    consecutiveDangerZones[player]++;
                     let setback = Math.floor(Math.random() * 6) + 1;
                     setMessage(`${playerNames[player]} hit a danger zone! Moving back ${setback} steps.`);
                     if (setback > pos) {
@@ -191,12 +193,20 @@
                     } else {
                         positions[player] = pos - setback;
                     }
+                    if (consecutiveDangerZones[player] > 1) {
+                        setMessage(`${playerNames[player]} hit consecutive danger zones! Moving back to start.`);
+                        positions[player] = 0;
+                        carryOverSteps[player] = 0;
+                        consecutiveDangerZones[player] = 0;
+                    }
                 } else {
                     setMessage(`${playerNames[player]} hit a danger zone but is protected!`);
                     protection[player]--; // Decrement protection count
+                    consecutiveDangerZones[player] = 0; // Reset consecutive danger zone hits
                 }
                 consecutiveSafeZones[player] = 0; // Reset consecutive safe zone hits
             } else if (safeZones.includes(pos)) {
+                consecutiveDangerZones[player] = 0; // Reset consecutive danger zone hits
                 if (consecutiveSafeZones[player] > 0) {
                     setMessage(`${playerNames[player]} hit another safe zone! Cancelling all safe zone benefits.`);
                     protection[player] = 0; // Cancel protection
@@ -208,6 +218,7 @@
                 }
             } else {
                 consecutiveSafeZones[player] = 0; // Reset if not on a safe zone
+                consecutiveDangerZones[player] = 0; // Reset if not on a danger zone
             }
         }
 
@@ -258,6 +269,7 @@
             protection = Array(numPlayers).fill(0);
             carryOverSteps = Array(numPlayers).fill(0); // Initialize carry over steps
             consecutiveSafeZones = Array(numPlayers).fill(0); // Initialize consecutive safe zone hits
+            consecutiveDangerZones = Array(numPlayers).fill(0); // Initialize consecutive danger zone hits
             currentPlayer = 0;
             gameActive = true;
 
