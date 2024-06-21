@@ -3,114 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Player vs Computer Board Game with Dice and Tokens</title>
+    <title>Multiplayer Board Game with Dice and Tokens</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            background-color: #f0f0f0;
-            color: #333;
-        }
-        .board-container {
-            width: 90%;
-            max-width: 800px;
-            margin: 20px 0;
-            position: relative;
-            padding-top: 100%; /* 1:1 Aspect Ratio */
-        }
-        .board {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            grid-auto-rows: 1fr;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            gap: 2px;
-        }
-        .cell {
-            background-color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid #ddd;
-            position: relative;
-            font-size: calc(10px + 0.5vw);
-            transition: background-color 0.3s, border-color 0.3s;
-        }
-        .cell:hover {
-            background-color: #f9f9f9;
-            border-color: #aaa;
-        }
-        .token {
-            width: 60%;
-            height: 60%;
-            border-radius: 50%;
-            position: absolute;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: calc(8px + 0.5vw);
-        }
-        .danger {
-            background-color: red;
-            color: white;
-        }
-        .safe {
-            background-color: blueviolet;
-            color: white;
-        }
-        button {
-            font-size: 1rem;
-            cursor: pointer;
-            padding: 10px 20px;
-            margin-top: 10px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        button:disabled {
-            background-color: #6c757d;
-            cursor: not-allowed;
-        }
-        .info {
-            margin: 10px;
-            text-align: center;
-        }
-        .message-box {
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #e9ecef;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            max-width: 800px;
-            width: 90%;
-            text-align: center;
-        }
-        a {
-            display: block;
-            margin-top: 10px;
-            text-decoration: none;
-            color: #007BFF;
-            transition: color 0.3s;
-        }
-        a:hover {
-            color: #0056b3;
-        }
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    background-color: #f0f0f0;
+    color: #333;
+}
+.board-container {
+    width: 90%;
+    max-width: 800px;
+    margin: 20px 0;
+    position: relative;
+    padding-top: 100%; /* 1:1 Aspect Ratio */
+}
+.board {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-auto-rows: 1fr;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    gap: 2px;
+}
+.cell {
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ddd;
+    position: relative;
+    font-size: calc(10px + 0.5vw);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+.cell:hover {
+    background-color: #f9f9f9;
+    border-color: #aaa;
+}
+.token {
+    width: 60%;
+    height: 60%;
+    border-radius: 50%;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: calc(8px + 0.5vw);
+}
+.danger {
+    background-color: red;
+    color: white;
+}
+.safe {
+    background-color: blueviolet;
+    color: white;
+}
+button {
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 10px 20px;
+    margin-top: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+button:hover {
+    background-color: #0056b3;
+}
+button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+.info {
+    margin: 10px;
+    text-align: center;
+}
+.message-box {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #e9ecef;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    max-width: 800px;
+    width: 90%;
+    text-align: center;
+}
+.player-input {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+.player-input input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    width: calc(100% / 2 - 20px); /* Adjust width for inputs */
+}
+a {
+    display: block;
+    margin-top: 10px;
+    text-decoration: none;
+    color: #007BFF;
+    transition: color 0.3s;
+}
+a:hover {
+    color: #0056b3;
+}
+
     </style>
 </head>
 <body>
     <div class="message-box" id="messageBox"></div>
+    <div class="info">
+        <button id="startGameButton">Start Game</button>
+    </div>
     <div class="board-container">
         <div class="board" id="board"></div>
     </div>
@@ -128,35 +146,35 @@
         const turnInfoElement = document.getElementById('turnInfo');
         const restartButton = document.getElementById('restartButton');
         const messageBox = document.getElementById('messageBox');
+        const startGameButton = document.getElementById('startGameButton');
         const boardSize = 100;
         const dangerZones = [];
         const safeZones = [];
         const playerColors = ['blue', 'red'];
-        const playerNames = ['Player', 'Computer'];
+        const playerNames = ['👦', '💻'];
         let cells = [];
         let currentPlayer = 0;
-        let positions = [0, 0];
-        let protection = [0, 0];
+        let positions = [];
+        let protection = [];
         let gameActive = false;
-        let carryOverSteps = [0, 0];
-        let consecutiveSafeZones = [0, 0];
-        let consecutiveDangerZones = [0, 0];
+        let carryOverSteps = []; // Array to hold carry over steps for each player
+        let consecutiveSafeZones = []; // Array to track consecutive safe zone hits
+        let consecutiveDangerZones = []; // Array to track consecutive danger zone hits
 
         function createBoard() {
-    boardElement.innerHTML = ''; // Clear the board
-    cells = [];
-    for (let i = 0; i < boardSize; i++) {
-        const cell = document.createElement('div');
-        cell.classList.add('cell');
-        cell.dataset.index = i;
-        cell.textContent = i + 1; // Label cells from 1 to 100
-        boardElement.appendChild(cell);
-        cells.push(cell);
-    }
-    assignZones();
-    updateBoard();
-}
-
+            boardElement.innerHTML = ''; // Clear the board
+            cells = [];
+            for (let i = 0; i < boardSize; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.index = i;
+                cell.textContent = i + 1; // Label cells from 1 to 100
+                boardElement.appendChild(cell);
+                cells.push(cell);
+            }
+            assignZones();
+            updateBoard();
+        }
 
         function assignZones() {
             dangerZones.length = 0; // Clear previous zones
@@ -226,51 +244,25 @@
                         consecutiveDangerZones[player] = 0;
                     }
                 } else {
-                    setMessage(`${playerNames[player]} is protected and hit a danger zone! Protection removed.`);
-                    protection[player] = 0;
+                    setMessage(`${playerNames[player]} hit a danger zone but is protected!`);
+                    protection[player]--; // Decrement protection count
+                    consecutiveDangerZones[player] = 0; // Reset consecutive danger zone hits
                 }
+                consecutiveSafeZones[player] = 0; // Reset consecutive safe zone hits
             } else if (safeZones.includes(pos)) {
-                protection[player] = 1;
-                consecutiveSafeZones[player]++;
-                if (consecutiveSafeZones[player] > 1) {
-                    setMessage(`${playerNames[player]} hit consecutive safe zones! Bonus move of 3 steps.`);
-                    movePlayer(player, 3);
-                    consecutiveSafeZones[player] = 0;
+                consecutiveDangerZones[player] = 0; // Reset consecutive danger zone hits
+                if (consecutiveSafeZones[player] > 0) {
+                    setMessage(`${playerNames[player]} hit another safe zone! Cancelling all safe zone benefits.`);
+                    protection[player] = 0; // Cancel protection
+                    consecutiveSafeZones[player] = 0; // Reset consecutive safe zone hits
                 } else {
                     setMessage(`${playerNames[player]} hit a safe zone! Protection granted.`);
+                    protection[player] = 1; // Grant one-time protection
+                    consecutiveSafeZones[player]++; // Track consecutive safe zone hits
                 }
             } else {
-                consecutiveDangerZones[player] = 0;
-                consecutiveSafeZones[player] = 0;
-            }
-        }
-
-        function updateBoard() {
-            cells.forEach(cell => {
-                cell.innerHTML = '';
-            });
-            positions.forEach((pos, index) => {
-                const token = document.createElement('div');
-                token.classList.add('token');
-                token.style.backgroundColor = playerColors[index];
-                token.textContent = playerNames[index].charAt(0).toUpperCase(); // Display 'P' for Player and 'C' for Computer
-                cells[pos].appendChild(token);
-            });
-        }
-
-        function nextTurn() {
-            currentPlayer = (currentPlayer + 1) % playerNames.length;
-            turnInfoElement.textContent = `${playerNames[currentPlayer]}'s turn`;
-            rollDiceButton.disabled = currentPlayer === 1; // Disable roll dice button for computer's turn
-            if (currentPlayer === 1) {
-                setTimeout(() => {
-                    let steps = rollDice();
-                    diceResultElement.textContent = `Computer rolled a ${steps}`;
-                    movePlayer(currentPlayer, steps);
-                    if (gameActive) {
-                        nextTurn();
-                    }
-                }, 1000);
+                consecutiveSafeZones[player] = 0; // Reset if not on a safe zone
+                consecutiveDangerZones[player] = 0; // Reset if not on a danger zone
             }
         }
 
@@ -278,40 +270,71 @@
             messageBox.textContent = message;
         }
 
-        function initializeGame() {
-            playerNames[0] = 'Player';
-            playerNames[1] = 'Computer';
+        function updateBoard() {
+            cells.forEach(cell => {
+                cell.innerHTML = cell.dataset.index;
+            });
+            positions.forEach((position, index) => {
+                const playerToken = document.createElement('div');
+                playerToken.classList.add('token');
+                playerToken.style.backgroundColor = playerColors[index];
+                playerToken.textContent = playerNames[index]; // Display player's name
+                cells[position].appendChild(playerToken);
+            });
+        }
 
-            positions = [0, 0];
+        function startGame() {
+            positions = [0, 0]; // Player and computer start positions
             protection = [0, 0];
-            carryOverSteps = [0, 0];
-            consecutiveSafeZones = [0, 0];
-            consecutiveDangerZones = [0, 0];
-
+            carryOverSteps = [0, 0]; // Initialize carry over steps
+            consecutiveSafeZones = [0, 0]; // Initialize consecutive safe zone hits
+            consecutiveDangerZones = [0, 0]; // Initialize consecutive danger zone hits
             currentPlayer = 0;
-            turnInfoElement.textContent = `${playerNames[currentPlayer]}'s turn`;
             gameActive = true;
-            rollDiceButton.disabled = false;
-            rollDiceButton.style.display = 'inline-block'; // Show the roll dice button
-            restartButton.style.display = 'none'; // Hide the restart button
+
             createBoard();
+            updateBoard();
+            rollDiceButton.disabled = false;
+            rollDiceButton.style.display = 'inline-block';
+            restartButton.style.display = 'none'; // Hide the restart button
+            diceResultElement.textContent = 'Roll the dice to start!';
+            turnInfoElement.textContent = `${playerNames[currentPlayer]}'s turn`;
+            messageBox.textContent = ''; // Clear messages
+        }
+
+        function computerTurn() {
+            if (!gameActive) return;
+            let diceRoll = rollDice();
+            let totalSteps = diceRoll - carryOverSteps[1];
+            carryOverSteps[1] = 0; // Reset carry over steps after use
+            diceResultElement.textContent = `${playerNames[1]} rolled a ${diceRoll}. Total move: ${totalSteps}`;
+            movePlayer(1, totalSteps);
+            if (gameActive) {
+                currentPlayer = (currentPlayer + 1) % positions.length;
+                turnInfoElement.textContent = `${playerNames[currentPlayer]}'s turn`;
+            }
         }
 
         rollDiceButton.addEventListener('click', () => {
             if (!gameActive) return;
-            let steps = rollDice();
-            diceResultElement.textContent = `You rolled a ${steps}`;
-            movePlayer(currentPlayer, steps);
+            let diceRoll = rollDice();
+            let totalSteps = diceRoll - carryOverSteps[currentPlayer];
+            carryOverSteps[currentPlayer] = 0; // Reset carry over steps after use
+            diceResultElement.textContent = `${playerNames[currentPlayer]} rolled a ${diceRoll}. Total move: ${totalSteps}`;
+            movePlayer(currentPlayer, totalSteps);
             if (gameActive) {
-                nextTurn();
+                currentPlayer = (currentPlayer + 1) % positions.length;
+                turnInfoElement.textContent = `${playerNames[currentPlayer]}'s turn`;
+                if (currentPlayer === 1) {
+                    setTimeout(computerTurn, 1000); // Give a slight delay for computer's turn
+                }
             }
         });
 
-        restartButton.addEventListener('click', () => {
-            location.reload(); // Reload the page to restart the game
-        });
+        restartButton.addEventListener('click', startGame);
 
-        initializeGame();
+        startGameButton.addEventListener('click', startGame);
+
     </script>
 </body>
 </html>
