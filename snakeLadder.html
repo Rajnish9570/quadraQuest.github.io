@@ -126,6 +126,7 @@
     </style>
 </head>
 <body>
+    <center>
     <div class="board" id="board"></div>
     <div class="controls">
         <div class="current-player" id="currentPlayer">Current Player: <span id="currentPlayerName"></span></div>
@@ -133,6 +134,7 @@
         <button class="restart-button" id="restart" onclick="restartGame()">Restart</button>
         <div class="message" id="messageBox"></div>
     </div>
+    </center>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const board = document.getElementById('board');
