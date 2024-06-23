@@ -12,7 +12,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: black;
+            background-color: #f0f0f0;
         }
 
         .game-container {
@@ -45,10 +45,17 @@
         .blue { color: blue; }
         .green { color: green; }
         .yellow { color: yellow; }
+
+        #round-info {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
     <div class="game-container">
+        <div id="round-info">Current Round: 1</div>
         <canvas id="gameCanvas"></canvas>
         <div id="info"></div>
     </div>
@@ -70,7 +77,7 @@
         ];
         const numPlayers = players.length;
         const rounds = 20;
-        let currentRound = 0;
+        let currentRound = 1;
         let currentPlayer = 0;
 
         function initBoard() {
@@ -125,7 +132,7 @@
         }
 
         function nextTurn() {
-            if (currentRound >= rounds) {
+            if (currentRound > rounds) {
                 showWinner();
                 return;
             }
@@ -139,6 +146,7 @@
             if (currentPlayer === 0) currentRound++;
 
             updateInfo();
+            document.getElementById('round-info').textContent = `Current Round: ${currentRound}`;
             requestAnimationFrame(drawPlayers);
         }
 
