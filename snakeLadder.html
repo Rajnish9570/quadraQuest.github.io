@@ -170,9 +170,10 @@
         updateInfo();
         drawPlayers();
 
-        // Set interval to simulate turns
-        setInterval(nextTurn, 1000);
-
+        // Set interval to simulate turns after 10 seconds
+        setTimeout(() => {
+            setInterval(nextTurn, 1000);
+        }, 10000);
     </script>
 </body>
 </html>
