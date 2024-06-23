@@ -1,1 +1,169 @@
-not available yet... 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Board Game</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            background-color: white;
+            border: 1px solid #000;
+            width: 100%;
+            height: auto;
+            max-width: 600px;
+        }
+
+        #info {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .player-info {
+            margin-top: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .red { color: red; }
+        .blue { color: blue; }
+        .green { color: green; }
+        .yellow { color: yellow; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="info"></div>
+    </div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.width;
+
+        // Initialize the board with 100 cells
+        const boardSize = 10;
+        const cellSize = canvas.width / boardSize;
+        let board = [];
+        let players = [
+            { color: 'red', position: 0, score: 0 },
+            { color: 'blue', position: 0, score: 0 },
+            { color: 'green', position: 0, score: 0 },
+            { color: 'yellow', position: 0, score: 0 }
+        ];
+        const numPlayers = players.length;
+        const rounds = 20;
+        let currentRound = 0;
+        let currentPlayer = 0;
+
+        function initBoard() {
+            let positiveNumbers = Array.from({length: 50}, () => Math.floor(Math.random() * 100) + 1);
+            let negativeNumbers = Array.from({length: 50}, () => Math.floor(Math.random() * -100));
+            board = [...positiveNumbers, ...negativeNumbers];
+            board.sort(() => Math.random() - 0.5);
+        }
+
+        function drawBoard() {
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    const idx = i * boardSize + j;
+                    ctx.fillStyle = board[idx] >= 0 ? '#90ee90' : '#ffcccb';
+                    ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                    ctx.strokeRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                    ctx.fillStyle = '#000';
+                    ctx.fillText(board[idx], j * cellSize + cellSize / 4, i * cellSize + cellSize / 2);
+                }
+            }
+        }
+
+        function updateInfo() {
+            const info = document.getElementById('info');
+            info.innerHTML = players.map((p) => {
+                return `<div class="player-info ${p.color}">${p.color.charAt(0).toUpperCase() + p.color.slice(1)} - Position: ${p.position} - Score: ${p.score}</div>`;
+            }).join('');
+        }
+
+        function rollDice() {
+            return Math.floor(Math.random() * 6) + 1;
+        }
+
+        function showWinner() {
+            const winner = players.reduce((max, p) => p.score > max.score ? p : max, players[0]);
+            const message = `Game over! The winner is ${winner.color.charAt(0).toUpperCase() + winner.color.slice(1)} with ${winner.score} points!`;
+
+            const messageBox = document.createElement('div');
+            messageBox.textContent = message;
+            messageBox.style.background = 'rgba(0, 0, 0, 0.8)';
+            messageBox.style.color = '#fff';
+            messageBox.style.padding = '20px';
+            messageBox.style.position = 'fixed';
+            messageBox.style.top = '50%';
+            messageBox.style.left = '50%';
+            messageBox.style.transform = 'translate(-50%, -50%)';
+            messageBox.style.borderRadius = '10px';
+            messageBox.style.textAlign = 'center';
+            messageBox.style.zIndex = '9999';
+
+            document.body.appendChild(messageBox);
+        }
+
+        function nextTurn() {
+            if (currentRound >= rounds) {
+                showWinner();
+                return;
+            }
+
+            const roll = rollDice();
+            const player = players[currentPlayer];
+            player.position = Math.min(player.position + roll, 99);
+            player.score += board[player.position];
+
+            currentPlayer = (currentPlayer + 1) % numPlayers;
+            if (currentPlayer === 0) currentRound++;
+
+            updateInfo();
+            requestAnimationFrame(drawPlayers);
+        }
+
+        function drawPlayers() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBoard();
+            players.forEach((p) => {
+                const row = Math.floor(p.position / boardSize);
+                const col = p.position % boardSize;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(col * cellSize + cellSize / 2, row * cellSize + cellSize / 2, cellSize / 4, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+        }
+
+        // Initialize the game
+        initBoard();
+        drawBoard();
+        updateInfo();
+        drawPlayers();
+
+        // Set interval to simulate turns
+        setInterval(nextTurn, 1000);
+
+    </script>
+</body>
+</html>
