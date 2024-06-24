@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Board Game</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            max-width: 90vw;
+            max-height: 90vh;
+        }
+
+        canvas {
+            background-color: #fff;
+            border: 2px solid #ccc;
+            width: 100%;
+            height: 100%;
+            max-width: 90vw;
+            max-height: 90vh;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #info {
+            margin-top: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .player-info {
+            padding: 7px;
+            border-radius: 5px;
+            font-weight: bold;
+            background: black;
+        }
+
+        .red { color: red; }
+        .blue { color: blue; }
+
+        #round-info {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            width: 100%;
+            text-align: center;
+        }
+
+        #roll-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            background-color: blue; /* Initial color */
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div id="round-info">Current Round 20: 0</div>
+        <canvas id="gameCanvas"></canvas>
+          <button id="roll-button">Roll Dice</button>
+        <div id="info"></div>
+       
+        <p><div><a href="index.html">Go to Home Page</a></div></p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const boardSize = 10;
+        const numPlayers = 2; // Adjusted for two players
+        const rounds = 19;
+
+        let cellSize;
+        let board = [];
+        let players = [
+            { color: 'red', position: 0, score: 0 },
+            { color: 'blue', position: 0, score: 0 }
+        ];
+        let currentRound = 0;
+        let currentPlayer = 0;
+
+        // Initialize the board with random numbers
+        function initBoard() {
+            let positiveNumbers = Array.from({ length: 50 }, () => Math.floor(Math.random() * 100) + 1);
+            let negativeNumbers = Array.from({ length: 50 }, () => Math.floor(Math.random() * -100));
+            board = [...positiveNumbers, ...negativeNumbers];
+            board.sort(() => Math.random() - 0.5);
+        }
+
+        // Draw the board with better visuals
+        function drawBoard() {
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    const idx = i * boardSize + j;
+                    const value = board[idx];
+
+                    // Set background color based on cell value
+                    ctx.fillStyle = value >= 0 ? '#90ee90' : '#ffcccb';
+                    ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                    ctx.strokeStyle = '#000';
+                    ctx.strokeRect(j * cellSize, i * cellSize, cellSize, cellSize);
+
+                    // Set text color based on cell value
+                    ctx.fillStyle = value >= 0 ? 'green' : 'red';
+                    ctx.font = `${cellSize / 3}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(board[idx], j * cellSize + cellSize / 2, i * cellSize + cellSize / 2);
+                }
+            }
+        }
+
+        // Update player information
+        function updateInfo() {
+            const info = document.getElementById('info');
+            info.innerHTML = players.map((p) => {
+                return `<div class="player-info ${p.color}">${p.color.charAt(0).toUpperCase() + p.color.slice(1)} - Position: ${p.position} - Score: ${p.score}</div>`;
+            }).join('');
+        }
+
+        // Roll a dice
+        function rollDice() {
+            return Math.floor(Math.random() * 6) + 1;
+        }
+
+        // Show the winner
+        function showWinner() {
+            const winner = players.reduce((max, p) => p.score > max.score ? p : max, players[0]);
+            const message = `Game over! The winner is ${winner.color.charAt(0).toUpperCase() + winner.color.slice(1)} with ${winner.score} points!`;
+
+            const messageBox = document.createElement('div');
+            messageBox.textContent = message;
+            messageBox.style.background = 'rgba(0, 0, 0, 0.8)';
+            messageBox.style.color = '#fff';
+            messageBox.style.padding = '20px';
+            messageBox.style.position = 'fixed';
+            messageBox.style.top = '50%';
+            messageBox.style.left = '50%';
+            messageBox.style.transform = 'translate(-50%, -50%)';
+            messageBox.style.borderRadius = '10px';
+            messageBox.style.textAlign = 'center';
+            messageBox.style.zIndex = '9999';
+
+            document.body.appendChild(messageBox);
+        }
+
+        // Advance to the next turn
+        function nextTurn() {
+            if (currentRound > rounds) {
+                showWinner();
+                return;
+            }
+
+            const roll = rollDice();
+            const player = players[currentPlayer];
+            player.position = Math.min(player.position + roll, 99);
+            player.score += board[player.position];
+
+            currentPlayer = (currentPlayer + 1) % numPlayers;
+            if (currentPlayer === 0) currentRound++;
+
+            updateInfo();
+            document.getElementById('round-info').textContent = `Current Round 20: ${currentRound}`;
+            document.getElementById('roll-button').style.backgroundColor = players[currentPlayer].color; // Change button color based on current player
+            drawPlayers();
+        }
+
+        // Draw players on the board
+        function drawPlayers() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBoard();
+            players.forEach((p) => {
+                const row = Math.floor(p.position / boardSize);
+                const col = p.position % boardSize;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(col * cellSize + cellSize / 2, row * cellSize + cellSize / 2, cellSize / 4, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+        }
+
+        // Resize canvas and redraw
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientWidth;  // Make the canvas square
+            cellSize = canvas.width / boardSize;
+            drawPlayers();
+        }
+
+        // Initialize the game
+        window.onload = function () {
+            initBoard();
+            resizeCanvas();
+            updateInfo();
+            document.getElementById('roll-button').style.backgroundColor = players[currentPlayer].color; // Initial button color based on first player
+        }
+
+        window.onresize = resizeCanvas;
+
+        // Roll dice button functionality
+        document.getElementById('roll-button').addEventListener('click', () => {
+            nextTurn();
+        });
+
+    </script>
+</body>
+</html>
