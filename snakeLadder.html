@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,7 +12,6 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            
         }
 
         .game-container {
@@ -42,8 +41,7 @@
         }
 
         .player-info {
-          padding: 7px;
-           
+            padding: 7px;
             border-radius: 5px;
             font-weight: bold;
             background: black;
@@ -64,14 +62,25 @@
             width: 100%;
             text-align: center;
         }
+
+        #rollDiceButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div class="game-container">
         <div id="round-info">Current Round: 1</div>
         <canvas id="gameCanvas"></canvas>
+        <button id="rollDiceButton">Roll Dice</button>
         <div id="info"></div>
-        <p> <div> <a href="index.html"> Go to Home Page</a></div></p>
+        <p><div><a href="index.html">Go to Home Page</a></div></p>
     </div>
 
     <script>
@@ -93,7 +102,6 @@
         let currentRound = 1;
         let currentPlayer = 0;
 
-        // Initialize the board with random numbers
         function initBoard() {
             let positiveNumbers = Array.from({ length: 50 }, () => Math.floor(Math.random() * 100) + 1);
             let negativeNumbers = Array.from({ length: 50 }, () => Math.floor(Math.random() * -100));
@@ -101,20 +109,17 @@
             board.sort(() => Math.random() - 0.5);
         }
 
-        // Draw the board with better visuals
         function drawBoard() {
             for (let i = 0; i < boardSize; i++) {
                 for (let j = 0; j < boardSize; j++) {
                     const idx = i * boardSize + j;
                     const value = board[idx];
 
-                    // Set background color based on cell value
                     ctx.fillStyle = value >= 0 ? '#90ee90' : '#ffcccb';
                     ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
                     ctx.strokeStyle = '#000';
                     ctx.strokeRect(j * cellSize, i * cellSize, cellSize, cellSize);
 
-                    // Set text color based on cell value
                     ctx.fillStyle = value >= 0 ? 'green' : 'red';
                     ctx.font = `${cellSize / 3}px Arial`;
                     ctx.textAlign = 'center';
@@ -124,7 +129,6 @@
             }
         }
 
-        // Update player information
         function updateInfo() {
             const info = document.getElementById('info');
             info.innerHTML = players.map((p) => {
@@ -132,12 +136,10 @@
             }).join('');
         }
 
-        // Roll a dice
         function rollDice() {
             return Math.floor(Math.random() * 6) + 1;
         }
 
-        // Show the winner
         function showWinner() {
             const winner = players.reduce((max, p) => p.score > max.score ? p : max, players[0]);
             const message = `Game over! The winner is ${winner.color.charAt(0).toUpperCase() + winner.color.slice(1)} with ${winner.score} points!`;
@@ -158,7 +160,6 @@
             document.body.appendChild(messageBox);
         }
 
-        // Advance to the next turn
         function nextTurn() {
             if (currentRound > rounds) {
                 showWinner();
@@ -175,10 +176,10 @@
 
             updateInfo();
             document.getElementById('round-info').textContent = `Current Round: ${currentRound}`;
-            requestAnimationFrame(drawPlayers);
+            drawPlayers();
+            updateRollButton();
         }
 
-        // Draw players on the board
         function drawPlayers() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawBoard();
@@ -192,27 +193,28 @@
             });
         }
 
-        // Resize canvas and redraw
         function resizeCanvas() {
             canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientWidth;  // Make the canvas square
+            canvas.height = canvas.clientWidth;
             cellSize = canvas.width / boardSize;
             drawPlayers();
         }
 
-        // Initialize the game
+        function updateRollButton() {
+            const rollButton = document.getElementById('rollDiceButton');
+            rollButton.style.backgroundColor = players[currentPlayer].color;
+        }
+
         window.onload = function () {
             initBoard();
             resizeCanvas();
             updateInfo();
+            updateRollButton();
         }
 
         window.onresize = resizeCanvas;
 
-        // Start game after 10 seconds
-        setTimeout(() => {
-            setInterval(nextTurn, 1000);
-        }, 10000);
+        document.getElementById('rollDiceButton').addEventListener('click', nextTurn);
     </script>
 </body>
 </html>
