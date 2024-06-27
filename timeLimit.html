@@ -1,1 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        #game-board {
+            margin-top: 20px;
+        }
+
+        #controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #dice-result, #timer, #current-turn, #message, #player-scores {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        #winner-message {
+            display: none;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            #game-board {
+                width: 300px;
+                height: 300px;
+            }
+
+            button {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+
+            #dice-result, #timer, #current-turn, #message, #player-scores {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="game-board" width="500" height="500"></canvas>
+    <div id="controls">
+        <button id="roll-dice">Roll Dice</button>
+        <div id="dice-result">Dice: 0</div>
+        <div id="timer">Time: 180</div>
+        <div id="current-turn">Current Turn: Player 1</div>
+        <div id="message"></div>
+        <div id="player-scores">
+            <div>Player 1 Score: <span id="player1-score">0</span></div>
+            <div>Player 2 Score: <span id="player2-score">0</span></div>
+        </div>
+    </div>
+    <div id="winner-message"></div>
+    <script>
+        const canvas = document.getElementById('game-board');
+        const ctx = canvas.getContext('2d');
+        const rollDiceButton = document.getElementById('roll-dice');
+        const diceResult = document.getElementById('dice-result');
+        const timerElement = document.getElementById('timer');
+        const currentTurnElement = document.getElementById('current-turn');
+        const messageElement = document.getElementById('message');
+        const player1ScoreElement = document.getElementById('player1-score');
+        const player2ScoreElement = document.getElementById('player2-score');
+        const winnerMessage = document.getElementById('winner-message');
+
+        const cellSize = 50;
+        let currentPlayer = 1;
+        let player1Score = 0;
+        let player2Score = 0;
+        let player1Position = 0;
+        let player2Position = 0;
+        let player1DiceRolls = 0;
+        let player2DiceRolls = 0;
+        let player1BonusCount = 0;
+        let player2BonusCount = 0;
+        let player1DeductCount = 0;
+        let player2DeductCount = 0;
+        let timeLeft = 180;
+        let diceEnabled = true;
+
+        const cells = [];
+
+        // Initialize the board
+        function drawBoard() {
+            for (let row = 0; row < 10; row++) {
+                for (let col = 0; col < 10; col++) {
+                    const x = col * cellSize;
+                    const y = row * cellSize;
+                    const index = row * 10 + col;
+                    cells[index] = {
+                        x, y,
+                        bonus: Math.random() < 0.2,
+                        deduct: Math.random() < 0.3
+                    };
+
+                    ctx.fillStyle = (index % 2 === 0) ? '#f0f0f0' : '#dcdcdc';
+                    ctx.fillRect(x, y, cellSize, cellSize);
+                    ctx.strokeRect(x, y, cellSize, cellSize);
+
+                    if (cells[index].bonus) {
+                        ctx.fillStyle = '#a3d2ca';
+                        ctx.fillRect(x + 5, y + 5, cellSize - 10, cellSize - 10);
+                    } else if (cells[index].deduct) {
+                        ctx.fillStyle = '#ff7f7f';
+                        ctx.fillRect(x + 5, y + 5, cellSize - 10, cellSize - 10);
+                    }
+
+                    ctx.fillStyle = 'black';
+                    ctx.fillText(index + 1, x + 20, y + 30);
+                }
+            }
+        }
+
+        // Place player tokens on the board
+        function placeToken(player, position) {
+            const { x, y } = cells[position];
+            ctx.beginPath();
+            ctx.arc(x + cellSize / 2, y + cellSize / 2, 10, 0, 2 * Math.PI);
+            ctx.fillStyle = player === 1 ? 'blue' : 'yellow';
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = player === 1 ? '#0000ff' : '#ffff00';
+            ctx.stroke();
+        }
+
+        // Roll dice
+        rollDiceButton.addEventListener('click', () => {
+            if (!diceEnabled) return;
+            const diceRoll = Math.floor(Math.random() * 6) + 1;
+            diceResult.innerText = `Dice: ${diceRoll}`;
+
+            let currentScore = currentPlayer === 1 ? player1Score : player2Score;
+            let currentPosition = currentPlayer === 1 ? player1Position : player2Position;
+
+            let newPosition = currentPosition + diceRoll;
+            if (newPosition >= 100) {
+                newPosition = newPosition % 100;
+            }
+
+            const cell = cells[newPosition];
+
+            // Clear old token position
+            ctx.clearRect(cell.x, cell.y, cellSize, cellSize);
+            ctx.fillStyle = (newPosition % 2 === 0) ? '#f0f0f0' : '#dcdcdc';
+            ctx.fillRect(cell.x, cell.y, cellSize, cellSize);
+            ctx.strokeRect(cell.x, cell.y, cellSize, cellSize);
+
+            if (cell.bonus) {
+                ctx.fillStyle = '#a3d2ca';
+                ctx.fillRect(cell.x + 5, cell.y + 5, cellSize - 10, cellSize - 10);
+            } else if (cell.deduct) {
+                ctx.fillStyle = '#ff7f7f';
+                ctx.fillRect(cell.x + 5, cell.y + 5, cellSize - 10, cellSize - 10);
+            }
+
+            ctx.fillStyle = 'black';
+            ctx.fillText(newPosition + 1, cell.x + 20, cell.y + 30);
+
+            if (cell.bonus) {
+                currentScore += diceRoll;
+                messageElement.innerText = `Player ${currentPlayer} landed on a bonus cell!`;
+                currentPlayer === 1 ? player1BonusCount++ : player2BonusCount++;
+            } else if (cell.deduct) {
+                currentScore -= diceRoll;
+                messageElement.innerText = `Player ${currentPlayer} landed on a deduct cell!`;
+                currentPlayer === 1 ? player1DeductCount++ : player2DeductCount++;
+            } else {
+                currentScore += diceRoll;
+                messageElement.innerText = '';
+            }
+
+            // Place new token
+            placeToken(currentPlayer, newPosition);
+
+            if (currentPlayer === 1) {
+                player1Score = currentScore;
+                player1Position = newPosition;
+                player1ScoreElement.innerText = player1Score;
+                player1DiceRolls++;
+                currentPlayer = 2;
+                diceResult.style.backgroundColor = 'yellow';
+            } else {
+                player2Score = currentScore;
+                player2Position = newPosition;
+                player2ScoreElement.innerText = player2Score;
+                player2DiceRolls++;
+                currentPlayer = 1;
+                diceResult.style.backgroundColor = 'blue';
+            }
+
+            currentTurnElement.innerText = `Current Turn: Player ${currentPlayer}`;
+        });
+
+        // Timer
+        const timer = setInterval(() => {
+            timeLeft--;
+            timerElement.innerText = `Time: ${timeLeft}`;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                endGame();
+            }
+        }, 1000);
+
+        function endGame() {
+            diceEnabled = false;
+            rollDiceButton.disabled = true;
+
+            const winner = player1Score > player2Score ? 'Player 1' : 'Player 2';
+            const winnerColor = player1Score > player2Score ? 'Blue' : 'Yellow';
+            const loser = player1Score > player2Score ? 'Player 2' : 'Player 1';
+            const loserColor = player1Score > player2Score ? 'Yellow' : 'Blue';
+            const winnerScore = player1Score > player2Score ? player1Score : player2Score;
+            const loserScore = player1Score > player2Score ? player2Score : player1Score;
+            const margin = Math.abs(player1Score - player2Score);
+
+            const winnerDiceRolls = player1Score > player2Score ? player1DiceRolls : player2DiceRolls;
+            const loserDiceRolls = player1Score > player2Score ? player2DiceRolls : player1DiceRolls;
+
+            const winnerBonusCount = player1Score > player2Score ? player1BonusCount : player2BonusCount;
+            const loserBonusCount = player1Score > player2Score ? player2BonusCount : player1BonusCount;
+
+            const winnerDeductCount = player1Score > player2Score ? player1DeductCount : player2DeductCount;
+            const loserDeductCount = player1Score > player2Score ? player2DeductCount : player1DeductCount;
+
+            let resultMessage = `Winner: ${winner} (${winnerColor})<br>
+                                Score: ${winnerScore}<br>
+                                Dice Rolls: ${winnerDiceRolls}<br>
+                                Bonus Cells Landed: ${winnerBonusCount}<br>
+                                Deduct Cells Landed: ${winnerDeductCount}<br><br>
+                                Loser: ${loser} (${loserColor})<br>
+                                Score: ${loserScore}<br>
+                                Dice Rolls: ${loserDiceRolls}<br>
+                                Bonus Cells Landed: ${loserBonusCount}<br>
+                                Deduct Cells Landed: ${loserDeductCount}<br><br>
+                                Winning Margin: ${margin}`;
+
+            winnerMessage.innerHTML = resultMessage;
+            winnerMessage.style.display = 'block';
+
+            // Hide game elements
+            document.getElementById('game-board').style.display = 'none';
+            document.getElementById('controls').style.display = 'none';
+        }
+
+        // Initial drawing of the board and placement of tokens
+        drawBoard();
+        placeToken(1, player1Position);
+        placeToken(2, player2Position);
+    </script>
+</body>
+</html>
 
