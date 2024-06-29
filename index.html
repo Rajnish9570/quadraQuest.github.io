@@ -4,41 +4,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quadra Quest</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        a {
+            text-decoration: none;
+            color: #00aaff;
+            font-weight: bold;
+        }
+        h1 {
+            color: #ffffff;
+            background-color: #005f99;
+            padding: 20px;
+            margin: 0;
+        }
+        h3 {
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #ff4b1f, #1fddff);
+            margin: 20px 0 10px;
+        }
+        p {
+            margin: 5px 0;
+        }
+        .content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 20px;
+        }
+        hr {
+            border: 1px solid #005f99;
+        }
+        .links {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .link-group {
+            margin: 10px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: calc(100% / 2 - 40px);
+        }
+        .link-group p {
+            margin: 10px 0;
+        }
+        @media (max-width: 600px) {
+            .link-group {
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+    </style>
 </head>
-<style>
-    body {
-  font-family: Arial, Helvetica, sans-serif;
-    }
-    a {
-        text-decoration:none;
-        color: green 
-    }
-    h3{
-        color:white;
-        padding:7px;
-        Border-radius: 25px 0px 10px 0px;
-        background: #f0f;
-    }
-</style>
-    <body>
-        <center>
-        <h1> QUADRA QUEST </h1>
-        <hr>
-            <h3>Mode I</h3>
-       <p> <a href="four.html">4 Players</a> </p>
-       <p> <a href="three.html">3 Players</a> </p>
-      <p> <a href="two.html">2 Players</a> <br> </p>
-      <p> <a href="computer.html">Vs Computer</a> </p>
-        <h3>Mode II</h3>
-      <p> <a href="multiPlayers.html">Multi Players</a> </p>
-      <p> <a href="newGame.html">Vs Computer</a> </p>
-    <h3>Mode III</h3>
-      <P><a href="snakeLadder.html"> 4 Players </a> </P>
-      <p> <a href="snakeLadder3.html"> 3 Players </a> </p>
-       <p> <a href="snakeLadder2.html"> 2 Players </a> </p>
-        <p> <a href="snakeLadderCom.html"> vs computer</a> </p>
-        <h3>Mode IV</h3>
-       <p> <a href="timeLimit.html">2 Players </a> </p>
-        </center>
-    </body>
-   </html>
+<body>
+    <h1>Quadra Quest</h1>
+    <hr>
+    <div class="content">
+        <div class="links">
+            <div class="link-group">
+                <h3>Mode I</h3>
+                <p><a href="four.html">4 Players</a></p>
+                <p><a href="three.html">3 Players</a></p>
+                <p><a href="two.html">2 Players</a></p>
+                <p><a href="computer.html">Vs Computer</a></p>
+            </div>
+            <div class="link-group">
+                <h3>Mode II</h3>
+                <p><a href="multiPlayers.html">Multi Players</a></p>
+                <p><a href="newGame.html">Vs Computer</a></p>
+            </div>
+            <div class="link-group">
+                <h3>Mode III</h3>
+                <p><a href="snakeLadder.html">4 Players</a></p>
+                <p><a href="snakeLadder3.html">3 Players</a></p>
+                <p><a href="snakeLadder2.html">2 Players</a></p>
+                <p><a href="snakeLadderCom.html">Vs Computer</a></p>
+            </div>
+            <div class="link-group">
+                <h3>Mode IV</h3>
+                <p><a href="timeLimit.html">2 Players</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
