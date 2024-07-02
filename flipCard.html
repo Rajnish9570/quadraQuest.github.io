@@ -1,1 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Board Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f8f8f8;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+
+        .game-info {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .game-info p {
+            margin: 5px 0;
+            font-size: 1.2em;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            grid-gap: 10px;
+        }
+
+        .card {
+            width: 80px;
+            height: 80px;
+            background-color: #4CAF50;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .card.flipped {
+            background-color: #2e7d32;
+            color: #ffffff;
+            cursor: default;
+            transform: rotateY(180deg);
+        }
+
+        .card.matched {
+            background-color: #9e9e9e;
+            color: #ffffff;
+            cursor: default;
+        }
+
+        .message-box {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        .restart-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #ffffff;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .restart-button:hover {
+            background-color: #388E3C;
+        }
+
+        .restart-button:active {
+            background-color: #2E7D32;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-info">
+        <p>Score: <span id="score">0</span></p>
+        <p>Moves: <span id="moves">0</span></p>
+    </div>
+    <div class="game-board" id="gameBoard">
+        <!-- Cards will be dynamically added here -->
+    </div>
+    <div class="message-box" id="messageBox"></div>
+    <button class="restart-button" onclick="restartGame()">Restart</button>
+    <script>
+        const cards = [
+            '❤', '❤', '🙈', '🙈', '👹', '👹', '🐕', '🐕',
+            '🛟', '🛟', '🦫', '🦫', '🐤', '🐤', '🐝', '🐝'
+        ];
+
+        let flippedCards = [];
+        let matchedCards = [];
+        let score = 0;
+        let moves = 0;
+        const moveLimit = 20;  // Set the move limit here
+        const gameBoard = document.getElementById('gameBoard');
+        const scoreDisplay = document.getElementById('score');
+        const movesDisplay = document.getElementById('moves');
+        const messageBox = document.getElementById('messageBox');
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function createBoard() {
+            gameBoard.innerHTML = '';
+            const shuffledCards = shuffle(cards);
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('card');
+                cardElement.dataset.value = card;
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (flippedCards.length < 2 && !this.classList.contains('flipped') && !this.classList.contains('matched')) {
+                this.classList.add('flipped');
+                this.innerText = this.dataset.value;
+                flippedCards.push(this);
+
+                if (flippedCards.length === 2) {
+                    checkMatch();
+                }
+            }
+        }
+
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+            if (card1.dataset.value === card2.dataset.value) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                matchedCards.push(card1, card2);
+                score += 10;
+                scoreDisplay.innerText = score;
+                flippedCards = [];
+
+                if (matchedCards.length === cards.length) {
+                    messageBox.innerText = `You win! Final score: ${score}, Moves: ${moves}`;
+                }
+            } else {
+                setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    card1.innerText = '';
+                    card2.innerText = '';
+                    flippedCards = [];
+                    moves++;
+                    movesDisplay.innerText = moves;
+                    checkGameOver();
+                }, 1000);
+            }
+        }
+
+        function checkGameOver() {
+            if (moves >= moveLimit && matchedCards.length !== cards.length) {
+                messageBox.innerText = `Game over! You have exceeded the move limit of ${moveLimit}. Final score: ${score}`;
+                document.querySelectorAll('.card').forEach(card => card.removeEventListener('click', flipCard));
+            }
+        }
+
+        function restartGame() {
+            flippedCards = [];
+            matchedCards = [];
+            score = 0;
+            moves = 0;
+            scoreDisplay.innerText = score;
+            movesDisplay.innerText = moves;
+            messageBox.innerText = '';
+            createBoard();
+        }
+
+        createBoard();
+    </script>
+</body>
+</html>
 
