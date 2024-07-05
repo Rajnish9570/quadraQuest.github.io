@@ -1,1 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+            font-family: Arial, sans-serif;
+          font-weight:900;
+        }
+
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(10, 60px);
+            grid-gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #4CAF50;
+            font-size: 30px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .card.flipped {
+            background-color: #fff;
+            cursor: default;
+        }
+
+        .card.matched {
+            background-color: #ccc;
+            cursor: default;
+        }
+
+        #timer, #score {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        #message {
+            font-size: 24px;
+            margin-top: 10px;
+        }
+
+        #restart-button {
+            display: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="timer">Time: 5:00</div>
+    <div id="score">Score: 0</div>
+    <div id="game-board"></div>
+    <button id="restart-button" onclick="restartGame()">Restart Game</button>
+    <div id="message"></div>
+    <script>
+        const emojis = ["😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇",
+                        "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "😚",
+                        "😋", "😛", "😝", "😜", "🤪", "🤨", "🧐", "🤓", "😎", "🤩",
+                        "🥳", "😏", "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣",
+                        "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠", "😡", "🤬"];
+        let shuffledEmojis, gameBoard, firstCard, secondCard, lockBoard, timerInterval, timeLeft, score;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            gameBoard = document.getElementById('game-board');
+            resetGame();
+        });
+
+        function resetGame() {
+            shuffledEmojis = shuffle([...emojis, ...emojis]);
+            gameBoard.innerHTML = '';
+            document.getElementById('message').textContent = '';
+            document.getElementById('restart-button').style.display = 'none';
+            timeLeft = 300; // 5 minutes in seconds
+            score = 0;
+            lockBoard = false; // Make sure lockBoard is reset
+            updateTimer();
+            updateScore();
+            createBoard();
+            startTimer();
+        }
+
+        function createBoard() {
+            shuffledEmojis.forEach(emoji => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.emoji = emoji;
+                card.addEventListener('click', flipCard);
+                gameBoard.appendChild(card);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard || this === firstCard || this.classList.contains('matched')) return;
+
+            this.classList.add('flipped');
+            this.textContent = this.dataset.emoji;
+
+            if (!firstCard) {
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            lockBoard = true;
+
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            const isMatch = firstCard.dataset.emoji === secondCard.dataset.emoji;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+
+            score += 10;
+            updateScore();
+
+            resetBoard();
+
+            if (document.querySelectorAll('.card.matched').length === shuffledEmojis.length) {
+                endGame(true);
+            }
+        }
+
+        function unflipCards() {
+            setTimeout(() => {
+                firstCard.classList.remove('flipped');
+                secondCard.classList.remove('flipped');
+                firstCard.textContent = '';
+                secondCard.textContent = '';
+
+                resetBoard();
+            }, 1000);
+        }
+
+        function resetBoard() {
+            [firstCard, secondCard, lockBoard] = [null, null, false];
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+
+                if (timeLeft <= 0) {
+                    endGame(false);
+                }
+            }, 1000);
+        }
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = `Time: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = `Score: ${score}`;
+        }
+
+        function endGame(won) {
+            clearInterval(timerInterval);
+            lockBoard = true;
+            document.getElementById('message').textContent = won ? 'You win!' : 'Time\'s up! You lose!';
+            document.getElementById('restart-button').style.display = 'block';
+            gameBoard.childNodes.forEach(card => card.removeEventListener('click', flipCard)); // Disable all cards
+        }
+
+        function restartGame() {
+            clearInterval(timerInterval);
+            resetGame();
+        }
+    </script>
+</body>
+</html>
 
