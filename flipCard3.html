@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(6, 100px);
+            grid-gap: 10px;
+            margin-top: 20px;
+        }
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            cursor: pointer;
+        }
+        .card.flipped {
+            background-color: #fff;
+        }
+        .card.matched {
+            background-color: lightgreen;
+        }
+        .card.disabled {
+            pointer-events: none;
+        }
+        #timer, #moves, #score {
+            font-size: 1.5em;
+        }
+        #controls {
+            margin-top: 20px;
+        }
+        #message {
+            margin-top: 20px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="timer">Time: 60s</div>
+    <div id="moves">Moves: 0</div>
+    <div id="score">Score: 0</div>
+    <div id="game-board"></div>
+    <div id="controls">
+        <button onclick="restartGame()">Restart</button>
+    </div>
+    <div id="message"></div>
+
+    <script>
+        const colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'cyan', 'lime', 'magenta', 'navy'];
+        let gameColors, gameBoard, timerElement, movesElement, scoreElement, messageElement;
+        let timer, timeLeft, moves, score, flippedCards, matchedPairs, totalPairs;
+
+        function init() {
+            gameColors = colors.concat(colors).sort(() => Math.random() - 0.5); // Duplicate and shuffle colors
+            gameBoard = document.getElementById('game-board');
+            timerElement = document.getElementById('timer');
+            movesElement = document.getElementById('moves');
+            scoreElement = document.getElementById('score');
+            messageElement = document.getElementById('message');
+            timeLeft = 60;
+            moves = 0;
+            score = 0;
+            flippedCards = [];
+            matchedPairs = 0;
+            totalPairs = colors.length;
+
+            gameBoard.innerHTML = '';
+            gameColors.forEach(color => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.color = color;
+                card.addEventListener('click', flipCard);
+                gameBoard.appendChild(card);
+            });
+
+            timerElement.textContent = `Time: ${timeLeft}s`;
+            movesElement.textContent = `Moves: ${moves}`;
+            scoreElement.textContent = `Score: ${score}`;
+            messageElement.textContent = '';
+            clearInterval(timer);
+            timer = setInterval(countdown, 1000);
+        }
+
+        function countdown() {
+            timeLeft--;
+            timerElement.textContent = `Time: ${timeLeft}s`;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                disableAllCards();
+                messageElement.textContent = `Time's up! Your score: ${score}`;
+            }
+        }
+
+        function flipCard() {
+            if (!timer) startTimer();
+
+            if (flippedCards.length < 2 && !this.classList.contains('flipped') && !this.classList.contains('disabled')) {
+                this.classList.add('flipped');
+                this.style.backgroundColor = this.dataset.color;
+                flippedCards.push(this);
+
+                if (flippedCards.length === 2) {
+                    moves++;
+                    movesElement.textContent = `Moves: ${moves}`;
+                    checkForMatch();
+                }
+            }
+        }
+
+        function checkForMatch() {
+            const [card1, card2] = flippedCards;
+            messageElement.textContent = `You clicked: ${card1.dataset.color} and ${card2.dataset.color}`;
+            if (card1.dataset.color === card2.dataset.color) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                matchedPairs++;
+                score += 10;
+                scoreElement.textContent = `Score: ${score}`;
+                flippedCards = [];
+                if (matchedPairs === totalPairs) {
+                    clearInterval(timer);
+                    messageElement.textContent = `You won! Time: ${60 - timeLeft}s, Moves: ${moves}, Score: ${score}`;
+                }
+            } else {
+                setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    card1.style.backgroundColor = '#ccc';
+                    card2.style.backgroundColor = '#ccc';
+                    flippedCards = [];
+                }, 1000);
+            }
+        }
+
+        function disableAllCards() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.classList.add('disabled');
+                card.style.backgroundColor = '#ccc';
+            });
+        }
+
+        function restartGame() {
+            init();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
