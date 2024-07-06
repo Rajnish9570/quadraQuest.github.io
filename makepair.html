@@ -13,7 +13,7 @@
             height: 100vh;
             background-color: #fff;
             font-family: Arial, sans-serif;
-            font-weight:900;
+            font-weight: 900;
         }
         #game {
             display: grid;
@@ -30,10 +30,7 @@
             background: #654000;
             cursor: pointer;
             user-select: none;
-            font-weight:900;
-
-
-
+            font-weight: 900;
         }
         .hidden {
             visibility: hidden;
@@ -49,23 +46,27 @@
             margin-top: 10px;
             font-size: 20px;
         }
+        #message {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: 900;
+            color: #333;
+        }
     </style>
 </head>
 <body>
-    
     <center>
         <div id="score">Score: 0</div>
-         <div id="timer">Time left: 120 seconds</div>
+        <div id="timer">Time left: 120 S</div>
+        <div id="message"></div>
     </center>
-        <div>
-           <div id="game"></div>
-        </div>
-    <center> <p id=message></p> </center>
+    <div id="game"></div>
 
     <script>
         const game = document.getElementById('game');
         const scoreDisplay = document.getElementById('score');
         const timerDisplay = document.getElementById('timer');
+        const messageDisplay = document.getElementById('message');
         let score = 0;
         let firstCard = null;
         let secondCard = null;
@@ -164,9 +165,9 @@
 
         function endGame(win) {
             if (win) {
-                document.getElementById("message")=`You win! Your score is: ${score}`;
+                messageDisplay.textContent = `You win! Your score is: ${score}`;
             } else {
-                document.getElementById("message")="Time's up! You lose. Your score is: ${score}";
+                messageDisplay.textContent = `Time's up! You lose. Your score is: ${score}`;
             }
             resetGame();
         }
