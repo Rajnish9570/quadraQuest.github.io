@@ -25,10 +25,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            color: black;
-            background: green;
+            color: white;
+            background: #654000;
             cursor: pointer;
             user-select: none;
+            font-weight:900;
+
+
+
         }
         .hidden {
             visibility: hidden;
@@ -50,7 +54,7 @@
     <div>
         <div id="game"></div>
         <div id="score">Score: 0</div>
-        <div id="timer">Time left: 110 seconds</div>
+        <div id="timer">Time left: 120 seconds</div>
     </div>
 
     <script>
@@ -62,7 +66,7 @@
         let secondCard = null;
         let cardIndex = 0;
         const cardDelay = 50; // Delay in milliseconds between card generation
-        let timeLeft = 110; // Time in seconds
+        let timeLeft = 120; // Time in seconds
         let gameStarted = false;
         let timerInterval;
 
