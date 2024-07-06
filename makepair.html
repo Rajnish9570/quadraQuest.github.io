@@ -60,7 +60,7 @@
         <div>
            <div id="game"></div>
         </div>
-    
+    <center> <p id=message></p> </center>
 
     <script>
         const game = document.getElementById('game');
@@ -164,9 +164,9 @@
 
         function endGame(win) {
             if (win) {
-                alert(`You win! Your score is: ${score}`);
+                document.getElementById("message")=`You win! Your score is: ${score}`;
             } else {
-                alert(`Time's up! You lose. Your score is: ${score}`);
+                document.getElementById("message")="Time's up! You lose. Your score is: ${score}";
             }
             resetGame();
         }
@@ -178,7 +178,7 @@
             firstCard = null;
             secondCard = null;
             scoreDisplay.textContent = `Score: ${score}`;
-            timeLeft = 110;
+            timeLeft = 120;
             timerDisplay.textContent = `Time left: ${timeLeft} seconds`;
             gameStarted = false;
             generateCards();
