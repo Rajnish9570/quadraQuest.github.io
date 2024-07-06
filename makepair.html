@@ -11,12 +11,12 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background-color: #f0f0f0;
+            background-color: #fff;
             font-family: Arial, sans-serif;
             font-weight:900;
         }
         #game {
-            disy: grid;
+            display: grid;
             grid-template-columns: repeat(10, 1fr);
             gap: 2px;
         }
@@ -52,14 +52,15 @@
     </style>
 </head>
 <body>
-    <div>
+    
     <center>
-        
         <div id="score">Score: 0</div>
          <div id="timer">Time left: 120 seconds</div>
     </center>
-        <div id="game"></div>
-    </div>
+        <div>
+           <div id="game"></div>
+        </div>
+    
 
     <script>
         const game = document.getElementById('game');
