@@ -19,6 +19,7 @@
             display: grid;
             grid-template-columns: repeat(10, 1fr);
             gap: 2px;
+            margin-top: 20px;
         }
         .card {
             width: 35px;
@@ -52,21 +53,28 @@
             font-weight: 700;
             text-align: center;
         }
+        #start-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <center>
         <div id="score">Score: 0</div>
         <div id="timer">Time left: 120 S</div>
-    
+        <button id="start-button">Start</button>
     </center>
     <div id="game"></div>
-   <div id="message"></div>
+    <div id="message"></div>
     <script>
         const game = document.getElementById('game');
         const scoreDisplay = document.getElementById('score');
         const timerDisplay = document.getElementById('timer');
         const messageDisplay = document.getElementById('message');
+        const startButton = document.getElementById('start-button');
         let score = 0;
         let firstCard = null;
         let secondCard = null;
@@ -136,13 +144,13 @@
                 cardIndex++;
                 if (cardIndex < numbers.length) {
                     setTimeout(generateCards, cardDelay);
-                } else {
-                    startGame();
                 }
             }
         }
 
         function startGame() {
+            if (gameStarted) return;
+            gameStarted = true;
             timerDisplay.textContent = `Time left: ${timeLeft} seconds`;
             timerInterval = setInterval(() => {
                 timeLeft--;
@@ -153,7 +161,6 @@
                     endGame(false);
                 }
             }, 1000);
-            gameStarted = true;
         }
 
         function checkForWin() {
@@ -184,6 +191,11 @@
             gameStarted = false;
             generateCards();
         }
+
+        startButton.addEventListener('click', () => {
+            resetGame();
+            startGame();
+        });
 
         generateCards();
     </script>
