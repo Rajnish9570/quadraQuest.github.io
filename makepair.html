@@ -167,6 +167,7 @@
         function checkForWin() {
             const remainingCards = document.querySelectorAll('.card:not(.hidden)');
             if (remainingCards.length === 0) {
+                clearInterval(timerInterval); // Stop the timer when all cards are matched
                 endGame(true);
             }
         }
