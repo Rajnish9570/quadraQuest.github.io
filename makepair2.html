@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sum to 50 Card Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #fff;
+            font-family: Arial, sans-serif;
+            font-weight: 900;
+        }
+        #game {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 2px;
+            margin-top: 20px;
+        }
+        .card {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            background: #0000cc;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 900;
+        }
+        .hidden {
+            visibility: hidden;
+        }
+        .selected {
+            background-color: #ddd;
+        }
+        #score {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+        #timer {
+            margin-top: 10px;
+            font-size: 20px;
+        }
+        #message {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+        }
+        #start-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <div id="score">Score: 0</div>
+        <div id="timer">Time left: 240 S</div>
+        <button id="start-button">Start</button>
+    </center>
+    <div id="game"></div>
+    <div id="message"></div>
+    <script>
+        const game = document.getElementById('game');
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer');
+        const messageDisplay = document.getElementById('message');
+        const startButton = document.getElementById('start-button');
+        let score = 0;
+        let firstCard = null;
+        let secondCard = null;
+        let cardIndex = 0;
+        const cardDelay = 50; // Delay in milliseconds between card generation
+        let timeLeft = 240; // Time in seconds
+        let gameStarted = false;
+        let timerInterval;
+
+        function generateValidNumbers() {
+            const pairs = [];
+            const possiblePairs = [
+                [1, 49], [2, 48], [3, 47], [4, 46], [5, 45],
+                [6, 44], [7, 43], [8, 42], [9, 41], [10, 40],
+                [11, 39], [12, 38], [13, 37], [14, 36], [15, 35],
+                [16, 34], [17, 33], [18, 32], [19, 31], [20, 30],
+                [21, 29], [22, 28], [23, 27], [24, 26], [25, 25]
+            ];
+            while (pairs.length < 100) {
+                const pair = possiblePairs[Math.floor(Math.random() * possiblePairs.length)];
+                pairs.push(pair[0], pair[1]);
+            }
+            return pairs.sort(() => Math.random() - 0.5);
+        }
+
+        let numbers = [];
+
+        function createCard(value) {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.textContent = value;
+            card.addEventListener('click', handleCardClick);
+            game.appendChild(card);
+        }
+
+        function handleCardClick(event) {
+            if (!gameStarted) return;
+
+            const card = event.target;
+            if (!firstCard) {
+                firstCard = card;
+                card.classList.add('selected');
+            } else if (!secondCard && card !== firstCard) {
+                secondCard = card;
+                card.classList.add('selected');
+                checkForMatch();
+            }
+        }
+
+        function checkForMatch() {
+            if (parseInt(firstCard.textContent) + parseInt(secondCard.textContent) === 50) {
+                score += 10; // 10 points per match
+                scoreDisplay.textContent = `Score: ${score}`;
+                firstCard.classList.add('hidden');
+                secondCard.classList.add('hidden');
+            }
+            resetSelection();
+            checkForWin();
+        }
+
+        function resetSelection() {
+            if (firstCard) firstCard.classList.remove('selected');
+            if (secondCard) secondCard.classList.remove('selected');
+            firstCard = null;
+            secondCard = null;
+        }
+
+        function generateCards() {
+            if (cardIndex < numbers.length) {
+                createCard(numbers[cardIndex]);
+                cardIndex++;
+                if (cardIndex < numbers.length) {
+                    setTimeout(generateCards, cardDelay);
+                } else {
+                    startTimer();
+                }
+            }
+        }
+
+        function startTimer() {
+            timerDisplay.textContent = `Time left: ${timeLeft} seconds`;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = `Time left: ${timeLeft} seconds`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    endGame(false);
+                }
+            }, 1000);
+            gameStarted = true;
+        }
+
+        function checkForWin() {
+            const remainingCards = document.querySelectorAll('.card:not(.hidden)');
+            if (remainingCards.length === 0) {
+                clearInterval(timerInterval); // Stop the timer when all cards are matched
+                endGame(true);
+            }
+        }
+
+        function endGame(win) {
+            if (win) {
+                messageDisplay.textContent = `You win! Your score is: ${score}`;
+            } else {
+                messageDisplay.textContent = `Time's up! You lose. Your score is: ${score}`;
+            }
+            resetGame();
+        }
+
+        function resetGame() {
+            game.innerHTML = '';
+            score = 0;
+            cardIndex = 0;
+            firstCard = null;
+            secondCard = null;
+            scoreDisplay.textContent = `Score: ${score}`;
+            timeLeft = 240;
+            timerDisplay.textContent = `Time left: ${timeLeft} seconds`;
+            gameStarted = false;
+        }
+
+        startButton.addEventListener('click', () => {
+            resetGame();
+            numbers = generateValidNumbers();
+            generateCards();
+        });
+    </script>
+</body>
+</html>
