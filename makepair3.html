@@ -62,7 +62,7 @@
 <body>
     <center>
         <div id="score">Score: 0</div>
-        <div id="timer">Time left: 120 S</div>
+        <div id="timer">Time left: 300 S</div>
         <button id="start-button">Start</button>
     </center>
     <div id="game"></div>
@@ -78,7 +78,7 @@
         let secondCard = null;
         let cardIndex = 0;
         const cardDelay = 50; // Delay in milliseconds between card generation
-        let timeLeft = 120; // Time in seconds
+        let timeLeft = 300; // Time in seconds
         let gameStarted = false;
         let timerInterval;
 
@@ -198,7 +198,7 @@
             firstCard = null;
             secondCard = null;
             scoreDisplay.textContent = `Score: ${score}`;
-            timeLeft = 120;
+            timeLeft = 300;
             timerDisplay.textContent = `Time left: ${timeLeft} seconds`;
             gameStarted = false;
         }
