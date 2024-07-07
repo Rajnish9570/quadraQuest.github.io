@@ -144,13 +144,13 @@
                 cardIndex++;
                 if (cardIndex < numbers.length) {
                     setTimeout(generateCards, cardDelay);
+                } else {
+                    startTimer();
                 }
             }
         }
 
-        function startGame() {
-            if (gameStarted) return;
-            gameStarted = true;
+        function startTimer() {
             timerDisplay.textContent = `Time left: ${timeLeft} seconds`;
             timerInterval = setInterval(() => {
                 timeLeft--;
@@ -161,6 +161,7 @@
                     endGame(false);
                 }
             }, 1000);
+            gameStarted = true;
         }
 
         function checkForWin() {
@@ -189,15 +190,12 @@
             timeLeft = 120;
             timerDisplay.textContent = `Time left: ${timeLeft} seconds`;
             gameStarted = false;
-            generateCards();
         }
 
         startButton.addEventListener('click', () => {
             resetGame();
-            startGame();
+            generateCards();
         });
-
-        generateCards();
     </script>
 </body>
 </html>
