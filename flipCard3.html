@@ -3,211 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sum to 100 Card Game</title>
+    <title>Memory Game</title>
     <style>
         body {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            background-color: #fff;
+            font-weight:900;
+            background-color: #f0f0f0;
             font-family: Arial, sans-serif;
-            font-weight: 900;
         }
-        #game {
+        #game-board {
             display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 2px;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 5px;
             margin-top: 20px;
         }
         .card {
-            width: 35px;
-            height: 35px;
+            width: 70px;
+            height: 70px;
+            background-color: #ccc;
             display: flex;
             justify-content: center;
             align-items: center;
+            border-radius:10px;
             cursor: pointer;
-            user-select: none;
-            font-weight: 900;
         }
-        .hidden {
-            visibility: hidden;
+        .card.flipped {
+            background-color: #fff;
         }
-        .selected {
-            background-color: #ddd;
+        .card.matched {
+            background-color: lightgreen;
         }
-        #score {
+        .card.disabled {
+            pointer-events: none;
+        }
+        #timer, #moves, #score {
+            font-size: 1.5em;
+        }
+        #controls {
             margin-top: 20px;
-            font-size: 20px;
-        }
-        #timer {
-            margin-top: 10px;
-            font-size: 20px;
         }
         #message {
-            margin-top: 10px;
-            font-size: 14px;
-            font-weight: 700;
-            text-align: center;
-        }
-        #start-button {
             margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
+            font-size: 1.2em;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <center>
-        <div id="score">Score: 0</div>
-        <div id="timer">Time left: 120 S</div>
-        <button id="start-button">Start</button>
-    </center>
-    <div id="game"></div>
+    <div id="timer">Time: 90s</div>
+    <div id="moves">Moves: 0</div>
+    <div id="score">Score: 0</div>
+    <div id="game-board"></div>
+    <div id="controls">
+        <button onclick="restartGame()">Restart</button>
+    </div>
     <div id="message"></div>
+
     <script>
-        const game = document.getElementById('game');
-        const scoreDisplay = document.getElementById('score');
-        const timerDisplay = document.getElementById('timer');
-        const messageDisplay = document.getElementById('message');
-        const startButton = document.getElementById('start-button');
-        let score = 0;
-        let firstCard = null;
-        let secondCard = null;
-        let cardIndex = 0;
-        const cardDelay = 50; // Delay in milliseconds between card generation
-        let timeLeft = 120; // Time in seconds
-        let gameStarted = false;
-        let timerInterval;
+        const colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'cyan', 'lime', 'magenta', 'navy'];
+        let gameColors, gameBoard, timerElement, movesElement, scoreElement, messageElement;
+        let timer, timeLeft, moves, score, flippedCards, matchedPairs, totalPairs;
 
-        const themes = [
-            { background: '#6cf020', color: 'black' },
-            { background: '#20b2aa', color: 'white' },
-            { background: '#ff6347', color: 'white' },
-            { background: '#ffeb3b', color: 'black' },
-            { background: '#8a2be2', color: 'white' }
-        ];
+        function init() {
+            gameColors = colors.concat(colors).sort(() => Math.random() - 0.5); // Duplicate and shuffle colors
+            gameBoard = document.getElementById('game-board');
+            timerElement = document.getElementById('timer');
+            movesElement = document.getElementById('moves');
+            scoreElement = document.getElementById('score');
+            messageElement = document.getElementById('message');
+            timeLeft = 90;
+            moves = 0;
+            score = 0;
+            flippedCards = [];
+            matchedPairs = 0;
+            totalPairs = colors.length;
 
-        function generateValidNumbers() {
-            const pairs = [];
-            const possiblePairs = [];
-            for (let i = 1; i <= 50; i++) {
-                possiblePairs.push([i, 100 - i]);
-            }
-            while (pairs.length < 100) {
-                const pair = possiblePairs[Math.floor(Math.random() * possiblePairs.length)];
-                pairs.push(pair[0], pair[1]);
-            }
-            return pairs.sort(() => Math.random() - 0.5);
+            gameBoard.innerHTML = '';
+            gameColors.forEach(color => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.color = color;
+                card.addEventListener('click', flipCard);
+                gameBoard.appendChild(card);
+            });
+
+            timerElement.textContent = `Time: ${timeLeft}s`;
+            movesElement.textContent = `Moves: ${moves}`;
+            scoreElement.textContent = `Score: ${score}`;
+            messageElement.textContent = '';
+            clearInterval(timer);
+            timer = setInterval(countdown, 1000);
         }
 
-        let numbers = [];
-
-        function createCard(value, theme) {
-            const card = document.createElement('div');
-            card.classList.add('card');
-            card.textContent = value;
-            card.style.backgroundColor = theme.background;
-            card.style.color = theme.color;
-            card.addEventListener('click', handleCardClick);
-            game.appendChild(card);
+        function countdown() {
+            timeLeft--;
+            timerElement.textContent = `Time: ${timeLeft}s`;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                disableAllCards();
+                messageElement.textContent = `Time's up! Your score: ${score}`;
+            }
         }
 
-        function handleCardClick(event) {
-            if (!gameStarted) return;
+        function flipCard() {
+            if (!timer) startTimer();
 
-            const card = event.target;
-            if (!firstCard) {
-                firstCard = card;
-                card.classList.add('selected');
-            } else if (!secondCard && card !== firstCard) {
-                secondCard = card;
-                card.classList.add('selected');
-                checkForMatch();
+            if (flippedCards.length < 2 && !this.classList.contains('flipped') && !this.classList.contains('disabled')) {
+                this.classList.add('flipped');
+                this.style.backgroundColor = this.dataset.color;
+                flippedCards.push(this);
+
+                if (flippedCards.length === 2) {
+                    moves++;
+                    movesElement.textContent = `Moves: ${moves}`;
+                    checkForMatch();
+                }
             }
         }
 
         function checkForMatch() {
-            if (parseInt(firstCard.textContent) + parseInt(secondCard.textContent) === 100) {
-                score += 10; // 10 points per match
-                scoreDisplay.textContent = `Score: ${score}`;
-                firstCard.classList.add('hidden');
-                secondCard.classList.add('hidden');
-            }
-            resetSelection();
-            checkForWin();
-        }
-
-        function resetSelection() {
-            if (firstCard) firstCard.classList.remove('selected');
-            if (secondCard) secondCard.classList.remove('selected');
-            firstCard = null;
-            secondCard = null;
-        }
-
-        function generateCards() {
-            if (cardIndex < numbers.length) {
-                const theme = themes[Math.floor(Math.random() * themes.length)];
-                createCard(numbers[cardIndex], theme);
-                cardIndex++;
-                if (cardIndex < numbers.length) {
-                    setTimeout(generateCards, cardDelay);
-                } else {
-                    startTimer();
+            const [card1, card2] = flippedCards;
+            messageElement.textContent = `You clicked: ${card1.dataset.color} and ${card2.dataset.color}`;
+            if (card1.dataset.color === card2.dataset.color) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                matchedPairs++;
+                score += 10;
+                scoreElement.textContent = `Score: ${score}`;
+                flippedCards = [];
+                if (matchedPairs === totalPairs) {
+                    clearInterval(timer);
+                    messageElement.textContent = `You won! Time: ${60 - timeLeft}s, Moves: ${moves}, Score: ${score}`;
                 }
-            }
-        }
-
-        function startTimer() {
-            timerDisplay.textContent = `Time left: ${timeLeft} seconds`;
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                timerDisplay.textContent = `Time left: ${timeLeft} seconds`;
-
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    endGame(false);
-                }
-            }, 1000);
-            gameStarted = true;
-        }
-
-        function checkForWin() {
-            const remainingCards = document.querySelectorAll('.card:not(.hidden)');
-            if (remainingCards.length === 0) {
-                clearInterval(timerInterval); // Stop the timer when all cards are matched
-                endGame(true);
-            }
-        }
-
-        function endGame(win) {
-            if (win) {
-                messageDisplay.textContent = `You win! Your score is: ${score}`;
             } else {
-                messageDisplay.textContent = `Time's up! You lose. Your score is: ${score}`;
+                setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    card1.style.backgroundColor = '#ccc';
+                    card2.style.backgroundColor = '#ccc';
+                    flippedCards = [];
+                }, 1000);
             }
-            resetGame();
         }
 
-        function resetGame() {
-            game.innerHTML = '';
-            score = 0;
-            cardIndex = 0;
-            firstCard = null;
-            secondCard = null;
-            scoreDisplay.textContent = `Score: ${score}`;
-            timeLeft = 120;
-            timerDisplay.textContent = `Time left: ${timeLeft} seconds`;
-            gameStarted = false;
+        function disableAllCards() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.classList.add('disabled');
+                card.style.backgroundColor = 'grey';
+            });
         }
 
-        startButton.addEventListener('click', () => {
-            resetGame();
-            numbers = generateValidNumbers();
-            generateCards();
-        });
+        function restartGame() {
+            init();
+        }
+
+        window.onload = init;
     </script>
 </body>
 </html>
